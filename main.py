@@ -617,7 +617,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         folders = self.cur.execute('''SELECT * FROM folders''').fetchall()
         for button in folders:
-            pass
+            print(button)
         self.btn_menu2 = QtWidgets.QPushButton(self.buttons)
         self.btn_menu2.setGeometry(QtCore.QRect(0, 47, 219, 37))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
