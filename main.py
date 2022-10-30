@@ -18,65 +18,59 @@ class ClickedLabel(QLabel):
 
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        """Базовая настройка интерфейса"""
+    """Этот класс используется для настройки интерфейса"""
 
-        # Настройка отображения главного экрана
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1246, 698)
-        MainWindow.setMinimumSize(QtCore.QSize(1246, 698))
-        MainWindow.setMaximumSize(QtCore.QSize(1246, 698))
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/src/img/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon)
-        MainWindow.setStyleSheet("background: #191919;")
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        # end Настройка отображения главного экрана
+    def __init__(self):
+        self.db = sqlite3.connect('data/tasker_data.db')
+        self.cur = self.db.cursor()
 
-        # Настройка главного меню
-        # - Header
-        self.header = QtWidgets.QGroupBox(self.centralwidget)
-        self.header.setEnabled(True)
-        self.header.setGeometry(QtCore.QRect(0, 0, 269, 698))
-        self.header.setMinimumSize(QtCore.QSize(269, 0))
-        self.header.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        self.header.setStyleSheet("border: 0;\n"
-                                  "background: #151515;")
-        self.header.setObjectName("header")
-        # - Logo
-        self.logo = QtWidgets.QLabel(self.header)
-        self.logo.setGeometry(QtCore.QRect(20, 20, 142, 52))
-        self.logo.setMaximumSize(QtCore.QSize(142, 52))
-        self.logo.setText("")
-        self.logo.setPixmap(QtGui.QPixmap(":/src/img/logo.svg"))
-        self.logo.setObjectName("logo")
-        # - Add folder btn
-        self.btn_add_folder = ClickedLabel(self.header)
-        self.btn_add_folder.setGeometry(QtCore.QRect(218, 30, 24, 31))
-        self.btn_add_folder.setPixmap(QtGui.QPixmap(":/src/img/add_folder.svg"))
-        self.btn_add_folder.setObjectName("btn_add_folder")
-        self.btn_add_folder.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        # - Buttons
-        self.buttons = QtWidgets.QGroupBox(self.header)
-        self.buttons.setGeometry(QtCore.QRect(23, 93, 219, 583))
-        self.buttons.setMaximumSize(QtCore.QSize(219, 583))
-        self.buttons.setTitle("")
-        self.buttons.setObjectName("buttons")
-        # end Настройка главного меню
+    def header_btn_setup(self):
+        """Настройка кнопок папок"""
+        BTN_HEADER_BASE = 47
+        BTN_HEADER_HEIGHT = 37
+        BTN_HEADER_SPACING = 10
 
-        # Настройка main
-        self.main = QtWidgets.QStackedWidget(self.centralwidget)
-        self.main.setGeometry(QtCore.QRect(269, -20, 977, 719))
-        self.main.setMinimumSize(QtCore.QSize(977, 719))
-        self.main.setMaximumSize(QtCore.QSize(977, 719))
-        self.main.setObjectName("main")
-        self.page_3 = QtWidgets.QWidget()
-        self.page_3.setMaximumSize(QtCore.QSize(977, 719))
-        self.page_3.setObjectName("page_3")
+        _translate = QtCore.QCoreApplication.translate  # Не трогать
+        folders = self.cur.execute('''SELECT * FROM folders''').fetchall()
+
+        self.btn_menu_main = QtWidgets.QPushButton(self.buttons)
+        self.btn_menu_main.setGeometry(QtCore.QRect(0, 0, 219, 37))
+        self.btn_menu_main.setMaximumSize(QtCore.QSize(219, 37))
+        self.btn_menu_main.setStyleSheet("background: #1490AA;\n"
+                                         "border-radius: 11px;\n"
+                                         "font-family: \'Inter\';\n"
+                                         "font-style: normal;\n"
+                                         "font-weight: 400;\n"
+                                         "font-size: 16px;\n"
+                                         "line-height: 19px;\n"
+                                         "text-align: left;\n"
+                                         "color: #FFFFFF;\n"
+                                         "padding: 8px 0 8px 15px;")
+        self.btn_menu_main.setObjectName("btn_menu_main")
+
+        for index, folder in enumerate(folders):
+            button = QtWidgets.QPushButton(self.buttons)
+            button.setGeometry(QtCore.QRect(0, BTN_HEADER_BASE + ((BTN_HEADER_HEIGHT + BTN_HEADER_SPACING) * index),
+                                            219, 37))
+            button.setMaximumSize(QtCore.QSize(219, 37))
+            button.setStyleSheet("background: #282828;\n"
+                                 "border-radius: 11px;\n"
+                                 "font-family: \'Inter\';\n"
+                                 "font-style: normal;\n"
+                                 "font-weight: 400;\n"
+                                 "font-size: 16px;\n"
+                                 "line-height: 19px;\n"
+                                 "text-align: left;\n"
+                                 "color: #FFFFFF;\n"
+                                 "padding: 8px 0 8px 15px;")
+            button.setObjectName(f"btn_menu{index}")
+            button.setText(_translate("MainWindow", folder[1]))
+
+    def main_page_setup(self):
+        """Настройка главной вкладки"""
 
         # - Настройка scrollArea
-        self.scrollArea = QtWidgets.QScrollArea(self.page_3)
+        self.scrollArea = QtWidgets.QScrollArea(self.main_page)
         self.scrollArea.setGeometry(QtCore.QRect(0, 20, 708, 698))
         self.scrollArea.setMinimumSize(QtCore.QSize(708, 698))
         self.scrollArea.setMaximumSize(QtCore.QSize(708, 698))
@@ -92,7 +86,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setContentsMargins(25, 25, 25, 25)
         self.gridLayout.setObjectName("gridLayout")
 
-        # Titles
+        # - Titles
         # 1
         self.title_1 = QtWidgets.QLabel(self.scrollAreaWidgetContents_2)
         self.title_1.setMaximumSize(QtCore.QSize(16777215, 29))
@@ -199,7 +193,7 @@ class Ui_MainWindow(object):
         self.title_7.setObjectName("title_7")
         self.gridLayout.addWidget(self.title_7, 7, 0, 1, 1)
 
-        # tasks
+        # - tasks
         # 1
         self.tasks_1 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
         self.tasks_1.setObjectName("tasks_1")
@@ -269,21 +263,18 @@ class Ui_MainWindow(object):
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
         self.verticalLayout_3.addLayout(self.formLayout_2)
         self.gridLayout.addWidget(self.tasks_3, 4, 0, 1, 1)
-
-        self.tasks_7 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
-        self.tasks_7.setTitle("")
-        self.tasks_7.setObjectName("tasks_7")
-
-        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.tasks_7)
-        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_8.setObjectName("verticalLayout_8")
-
-        self.formLayout_6 = QtWidgets.QFormLayout()
-        self.formLayout_6.setContentsMargins(-1, 10, -1, -1)
-        self.formLayout_6.setObjectName("formLayout_6")
-
-        self.label_5 = QtWidgets.QLabel(self.tasks_7)
-        self.label_5.setStyleSheet("font-family: \'Inter\';\n"
+        # 4
+        self.tasks_4 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
+        self.tasks_4.setTitle("")
+        self.tasks_4.setObjectName("tasks_4")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.tasks_4)
+        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.formLayout_3 = QtWidgets.QFormLayout()
+        self.formLayout_3.setContentsMargins(-1, 10, -1, -1)
+        self.formLayout_3.setObjectName("formLayout_3")
+        self.label_2 = QtWidgets.QLabel(self.tasks_4)
+        self.label_2.setStyleSheet("font-family: \'Inter\';\n"
                                    "font-style: normal;\n"
                                    "font-weight: 400;\n"
                                    "font-size: 16px;\n"
@@ -293,15 +284,11 @@ class Ui_MainWindow(object):
                                    "letter-spacing: -0.055em;\n"
                                    "\n"
                                    "color: #A3A3A3;")
-        self.label_5.setObjectName("label_5")
-
-        self.formLayout_6.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_5)
-
-        self.verticalLayout_8.addLayout(self.formLayout_6)
-
-        self.gridLayout.addWidget(self.tasks_7, 8, 0, 1, 1)
-
-
+        self.label_2.setObjectName("label_2")
+        self.formLayout_3.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_2)
+        self.verticalLayout_5.addLayout(self.formLayout_3)
+        self.gridLayout.addWidget(self.tasks_4, 4, 1, 1, 1)
+        # 5
         self.tasks_5 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
         self.tasks_5.setTitle("")
         self.tasks_5.setObjectName("tasks_5")
@@ -326,32 +313,7 @@ class Ui_MainWindow(object):
         self.formLayout_4.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_3)
         self.verticalLayout_6.addLayout(self.formLayout_4)
         self.gridLayout.addWidget(self.tasks_5, 6, 0, 1, 1)
-        self.tasks_4 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
-        self.tasks_4.setTitle("")
-        self.tasks_4.setObjectName("tasks_4")
-        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.tasks_4)
-        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.formLayout_3 = QtWidgets.QFormLayout()
-        self.formLayout_3.setContentsMargins(-1, 10, -1, -1)
-        self.formLayout_3.setObjectName("formLayout_3")
-
-        self.label_2 = QtWidgets.QLabel(self.tasks_4)
-        self.label_2.setStyleSheet("font-family: \'Inter\';\n"
-                                   "font-style: normal;\n"
-                                   "font-weight: 400;\n"
-                                   "font-size: 16px;\n"
-                                   "line-height: 16px;\n"
-                                   "/* identical to box height, or 100% */\n"
-                                   "\n"
-                                   "letter-spacing: -0.055em;\n"
-                                   "\n"
-                                   "color: #A3A3A3;")
-        self.label_2.setObjectName("label_2")
-        self.formLayout_3.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_2)
-        self.verticalLayout_5.addLayout(self.formLayout_3)
-        self.gridLayout.addWidget(self.tasks_4, 4, 1, 1, 1)
-
+        # 6
         self.tasks_6 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
         self.tasks_6.setTitle("")
         self.tasks_6.setObjectName("tasks_6")
@@ -376,17 +338,36 @@ class Ui_MainWindow(object):
         self.formLayout_5.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_4)
         self.verticalLayout_7.addLayout(self.formLayout_5)
         self.gridLayout.addWidget(self.tasks_6, 6, 1, 1, 1)
+        # 7
+        self.tasks_7 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
+        self.tasks_7.setTitle("")
+        self.tasks_7.setObjectName("tasks_7")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.tasks_7)
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
+        self.formLayout_6 = QtWidgets.QFormLayout()
+        self.formLayout_6.setContentsMargins(-1, 10, -1, -1)
+        self.formLayout_6.setObjectName("formLayout_6")
+        self.label_5 = QtWidgets.QLabel(self.tasks_7)
+        self.label_5.setStyleSheet("font-family: \'Inter\';\n"
+                                   "font-style: normal;\n"
+                                   "font-weight: 400;\n"
+                                   "font-size: 16px;\n"
+                                   "line-height: 16px;\n"
+                                   "/* identical to box height, or 100% */\n"
+                                   "\n"
+                                   "letter-spacing: -0.055em;\n"
+                                   "\n"
+                                   "color: #A3A3A3;")
+        self.label_5.setObjectName("label_5")
+        self.formLayout_6.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_5)
+        self.verticalLayout_8.addLayout(self.formLayout_6)
+        self.gridLayout.addWidget(self.tasks_7, 8, 0, 1, 1)
+        # end Настройка scrollArea
 
-
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
-        self.scrollArea_2 = QtWidgets.QScrollArea(self.page_3)
+        # Настройка scrollArea2
+        self.scrollArea_2 = QtWidgets.QScrollArea(self.main_page)
         self.scrollArea_2.setGeometry(QtCore.QRect(708, 20, 271, 691))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.scrollArea_2.sizePolicy().hasHeightForWidth())
-        self.scrollArea_2.setSizePolicy(sizePolicy)
-        self.scrollArea_2.setMinimumSize(QtCore.QSize(0, 691))
         self.scrollArea_2.setMaximumSize(QtCore.QSize(16777215, 691))
         self.scrollArea_2.setStyleSheet("border: 0;\n"
                                         "background: #151515;")
@@ -395,15 +376,13 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
         self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 271, 691))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
+
         self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_2.setContentsMargins(25, 25, 25, 25)
         self.gridLayout_2.setObjectName("gridLayout_2")
+
+        # - Titles
         self.label_9 = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
-        self.label_9.setSizePolicy(sizePolicy)
         self.label_9.setMaximumSize(QtCore.QSize(16777215, 29))
         self.label_9.setStyleSheet("font-family: \'Inter\';\n"
                                    "font-style: normal;\n"
@@ -417,42 +396,44 @@ class Ui_MainWindow(object):
                                    "color: #FFFFFF;")
         self.label_9.setObjectName("label_9")
         self.gridLayout_2.addWidget(self.label_9, 0, 0, 1, 1)
+
+        self.label_10 = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
+        self.label_10.setMaximumSize(QtCore.QSize(16777215, 29))
+        self.label_10.setStyleSheet("font-family: \'Inter\';\n"
+                                    "font-style: normal;\n"
+                                    "font-weight: 700;\n"
+                                    "font-size: 24px;\n"
+                                    "line-height: 29px;\n"
+                                    "/* identical to box height, or 121% */\n"
+                                    "\n"
+                                    "letter-spacing: -0.055em;\n"
+                                    "\n"
+                                    "color: #FFFFFF;")
+        self.label_10.setObjectName("label_10")
+        self.gridLayout_2.addWidget(self.label_10, 2, 0, 1, 1)
+        # end
+
         self.groupBox_9 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_3)
         self.groupBox_9.setTitle("")
         self.groupBox_9.setObjectName("groupBox_9")
         self.gridLayout_2.addWidget(self.groupBox_9, 3, 0, 1, 1)
+
         self.groupBox_8 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.groupBox_8.sizePolicy().hasHeightForWidth())
-        self.groupBox_8.setSizePolicy(sizePolicy)
         self.groupBox_8.setMinimumSize(QtCore.QSize(0, 0))
         self.groupBox_8.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.groupBox_8.setTitle("")
         self.groupBox_8.setObjectName("groupBox_8")
+
         self.gridLayout_4 = QtWidgets.QGridLayout(self.groupBox_8)
         self.gridLayout_4.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.label_6 = QtWidgets.QLabel(self.groupBox_8)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
-        self.label_6.setSizePolicy(sizePolicy)
-        self.label_6.setStyleSheet("position: top;")
-        self.label_6.setObjectName("label_6")
-        self.gridLayout_4.addWidget(self.label_6, 0, 1, 1, 1)
+
         self.task_2_2 = QtWidgets.QFormLayout()
         self.task_2_2.setContentsMargins(-1, 10, -1, -1)
         self.task_2_2.setObjectName("task_2_2")
+
         self.task_btn_2_2 = QtWidgets.QToolButton(self.groupBox_8)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.task_btn_2_2.sizePolicy().hasHeightForWidth())
-        self.task_btn_2_2.setSizePolicy(sizePolicy)
         self.task_btn_2_2.setMaximumSize(QtCore.QSize(18, 18))
         self.task_btn_2_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.task_btn_2_2.setStyleSheet("background: #1490AA;\n"
@@ -462,7 +443,7 @@ class Ui_MainWindow(object):
         icon1.addPixmap(QtGui.QPixmap(":/src/img/task_done.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.task_btn_2_2.setIcon(icon1)
         self.task_btn_2_2.setObjectName("task_btn_2_2")
-        self.task_2_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn_2_2)
+
         self.task_description_2_2 = QtWidgets.QLabel(self.groupBox_8)
         self.task_description_2_2.setStyleSheet("font-family: \'Inter\';\n"
                                                 "font-style: normal;\n"
@@ -478,35 +459,84 @@ class Ui_MainWindow(object):
         self.task_description_2_2.setScaledContents(False)
         self.task_description_2_2.setWordWrap(True)
         self.task_description_2_2.setObjectName("task_description_2_2")
+
+        self.task_2_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn_2_2)
         self.task_2_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description_2_2)
+
         self.gridLayout_4.addLayout(self.task_2_2, 0, 0, 1, 1)
         self.gridLayout_4.setColumnStretch(0, 1)
         self.gridLayout_2.addWidget(self.groupBox_8, 1, 0, 1, 1)
-        self.label_10 = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
-        self.label_10.setSizePolicy(sizePolicy)
-        self.label_10.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.label_10.setStyleSheet("font-family: \'Inter\';\n"
-                                    "font-style: normal;\n"
-                                    "font-weight: 700;\n"
-                                    "font-size: 24px;\n"
-                                    "line-height: 29px;\n"
-                                    "/* identical to box height, or 121% */\n"
-                                    "\n"
-                                    "letter-spacing: -0.055em;\n"
-                                    "\n"
-                                    "color: #FFFFFF;")
-        self.label_10.setObjectName("label_10")
-        self.gridLayout_2.addWidget(self.label_10, 2, 0, 1, 1)
-        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
-        self.main.addWidget(self.page_3)
 
-        self.page_4 = QtWidgets.QWidget()
-        self.page_4.setObjectName("page_4")
-        self.main.addWidget(self.page_4)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
+        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
+
+    def setupUi(self, MainWindow):
+        """Базовая настройка интерфейса"""
+
+        # Настройка отображения главного экрана
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1246, 698)
+        MainWindow.setMinimumSize(QtCore.QSize(1246, 698))
+        MainWindow.setMaximumSize(QtCore.QSize(1246, 698))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/src/img/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
+        MainWindow.setStyleSheet("background: #191919;")
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        # end Настройка отображения главного экрана
+
+        # Настройка главного меню
+        # - Header
+        self.header = QtWidgets.QGroupBox(self.centralwidget)
+        self.header.setEnabled(True)
+        self.header.setGeometry(QtCore.QRect(0, 0, 269, 698))
+        self.header.setMinimumSize(QtCore.QSize(269, 0))
+        self.header.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.header.setStyleSheet("border: 0;\n"
+                                  "background: #151515;")
+        self.header.setObjectName("header")
+        # - Logo
+        self.logo = QtWidgets.QLabel(self.header)
+        self.logo.setGeometry(QtCore.QRect(20, 20, 142, 52))
+        self.logo.setMaximumSize(QtCore.QSize(142, 52))
+        self.logo.setText("")
+        self.logo.setPixmap(QtGui.QPixmap(":/src/img/logo.svg"))
+        self.logo.setObjectName("logo")
+        # - Add folder btn
+        self.btn_add_folder = ClickedLabel(self.header)
+        self.btn_add_folder.setGeometry(QtCore.QRect(218, 30, 24, 31))
+        self.btn_add_folder.setPixmap(QtGui.QPixmap(":/src/img/add_folder.svg"))
+        self.btn_add_folder.setObjectName("btn_add_folder")
+        self.btn_add_folder.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        # - Buttons
+        self.buttons = QtWidgets.QGroupBox(self.header)
+        self.buttons.setGeometry(QtCore.QRect(23, 93, 219, 583))
+        self.buttons.setMaximumSize(QtCore.QSize(219, 583))
+        self.buttons.setTitle("")
+        self.buttons.setObjectName("buttons")
+
+        self.header_btn_setup()
+        # end Настройка главного меню
+
+        # Настройка main
+        self.main = QtWidgets.QStackedWidget(self.centralwidget)
+        self.main.setGeometry(QtCore.QRect(269, -20, 977, 719))
+        self.main.setMinimumSize(QtCore.QSize(977, 719))
+        self.main.setMaximumSize(QtCore.QSize(977, 719))
+        self.main.setObjectName("main")
+
+        # main_page setup
+        self.main_page = QtWidgets.QWidget()
+        self.main_page.setObjectName("main_page")
+        self.main_page_setup()
+
+        # folder_page setup
+        self.folder_page = QtWidgets.QWidget()
+        self.folder_page.setObjectName("folder_page")
+
+        self.main.addWidget(self.main_page)
+        self.main.addWidget(self.folder_page)
         # end Настройка main
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -518,6 +548,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Tasker"))
+        self.btn_menu_main.setText(_translate("MainWindow", "Все задачи"))
+        # TODO(Переделать)
         self.label_5.setText(_translate("MainWindow", "Задач нет"))
         self.task_description_1_1.setText(_translate("MainWindow", "Простое задание"))
         self.label_3.setText(_translate("MainWindow", "Задач нет"))
@@ -532,102 +564,17 @@ class Ui_MainWindow(object):
         self.title_5.setText(_translate("MainWindow", "Вторник, 27 октября"))
         self.title_7.setText(_translate("MainWindow", "Четверг, 29 октября"))
         self.label_9.setText(_translate("MainWindow", "Просроченные"))
-        self.label_6.setText(_translate("MainWindow", "27.01"))
         self.task_description_2_2.setText(_translate("MainWindow", "Простое задание"))
         self.label_10.setText(_translate("MainWindow", "Предстоящие"))
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
+    """В этом классе находятся функции поведения приложения"""
+
     def __init__(self):
         super().__init__()
-        self.db = sqlite3.connect('data/tasker_data.db')
-        self.cur = self.db.cursor()
-
         self.setupUi(self)
-        self.headers_btn_setup()
         self.btn_add_folder.clicked.connect(self.add_folder)
-
-    # SETUPS
-    def headers_btn_setup(self):
-        self.btn_menu1 = QtWidgets.QPushButton(self.buttons)
-        self.btn_menu1.setGeometry(QtCore.QRect(0, 0, 219, 37))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_menu1.sizePolicy().hasHeightForWidth())
-        self.btn_menu1.setSizePolicy(sizePolicy)
-        self.btn_menu1.setMaximumSize(QtCore.QSize(219, 37))
-        font = QtGui.QFont()
-        font.setFamily("Inter")
-        font.setPointSize(-1)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
-        self.btn_menu1.setFont(font)
-        self.btn_menu1.setStyleSheet("background: #1490AA;\n"
-                                     "border-radius: 11px;\n"
-                                     "font-family: \'Inter\';\n"
-                                     "font-style: normal;\n"
-                                     "font-weight: 400;\n"
-                                     "font-size: 16px;\n"
-                                     "line-height: 19px;\n"
-                                     "text-align: left;\n"
-                                     "color: #FFFFFF;\n"
-                                     "padding: 8px 0 8px 15px;")
-        self.btn_menu1.setObjectName("btn_menu1")
-
-        folders = self.cur.execute('''SELECT * FROM folders''').fetchall()
-        for button in folders:
-            print(button)
-        self.btn_menu2 = QtWidgets.QPushButton(self.buttons)
-        self.btn_menu2.setGeometry(QtCore.QRect(0, 47, 219, 37))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_menu2.sizePolicy().hasHeightForWidth())
-        self.btn_menu2.setSizePolicy(sizePolicy)
-        self.btn_menu2.setMaximumSize(QtCore.QSize(219, 37))
-        self.btn_menu2.setStyleSheet("background: #282828;\n"
-                                     "border-radius: 11px;\n"
-                                     "font-family: \'Inter\';\n"
-                                     "font-style: normal;\n"
-                                     "font-weight: 400;\n"
-                                     "font-size: 16px;\n"
-                                     "line-height: 19px;\n"
-                                     "text-align: left;\n"
-                                     "color: #FFFFFF;\n"
-                                     "padding: 8px 0 8px 15px;")
-        self.btn_menu2.setObjectName("btn_menu2")
-        self.btn_menu3 = QtWidgets.QPushButton(self.buttons)
-        self.btn_menu3.setGeometry(QtCore.QRect(0, 94, 219, 37))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_menu3.sizePolicy().hasHeightForWidth())
-        self.btn_menu3.setSizePolicy(sizePolicy)
-        self.btn_menu3.setMaximumSize(QtCore.QSize(219, 37))
-        self.btn_menu3.setStyleSheet("background: #282828;\n"
-                                     "border-radius: 11px;\n"
-                                     "font-family: \'Inter\';\n"
-                                     "font-style: normal;\n"
-                                     "font-weight: 400;\n"
-                                     "font-size: 16px;\n"
-                                     "line-height: 19px;\n"
-                                     "text-align: left;\n"
-                                     "color: #FFFFFF;\n"
-                                     "padding: 8px 0 8px 15px;")
-        self.btn_menu3.setObjectName("btn_menu3")
-
-        _translate = QtCore.QCoreApplication.translate
-        self.btn_menu1.setText(_translate("MainWindow", "Все задачи"))
-        self.btn_menu2.setText(_translate("MainWindow", "Папка 1"))
-        self.btn_menu3.setText(_translate("MainWindow", "Папка 2"))
-
-    def main_page_setup(self):
-        pass
-
-    def pages_setup(self):
-        pass
 
     # ACTIONS
     def add_folder(self):
