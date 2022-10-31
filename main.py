@@ -21,7 +21,7 @@ class Actions_MainWindow:
         self.db = sqlite3.connect('data/tasker_data.db')
         self.cur = self.db.cursor()
 
-        self._translate = QtCore.QCoreApplication.translate  # Не трогать
+        self._translate = QtCore.QCoreApplication.translate
 
     def add_folder(self):
         pass
