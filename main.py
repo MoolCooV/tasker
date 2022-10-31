@@ -13,9 +13,55 @@ if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
 if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
-# Класс на отслеживание кликов на QLabel
-class ClickedLabel(QLabel):
-    clicked = pyqtSignal()
+
+class Actions_MainWindow:
+    """Класс с методами поведения приложения"""
+
+    def __init__(self):
+        self.db = sqlite3.connect('data/tasker_data.db')
+        self.cur = self.db.cursor()
+
+        self._translate = QtCore.QCoreApplication.translate  # Не трогать
+
+    def add_folder(self):
+        pass
+
+    def folder_click(self, sender_btn, active_button):
+        if sender_btn == active_button:
+            return 429
+        else:
+            if sender_btn:
+                sender_btn.setStyleSheet("background: #1490AA;\n"
+                                         "border-radius: 11px;\n"
+                                         "font-family: \'Inter\';\n"
+                                         "font-style: normal;\n"
+                                         "font-weight: 400;\n"
+                                         "font-size: 16px;\n"
+                                         "line-height: 19px;\n"
+                                         "text-align: left;\n"
+                                         "color: #FFFFFF;\n"
+                                         "padding: 8px 0 8px 15px;")
+                sender_btn.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+            if active_button:
+                active_button.setStyleSheet("background: #282828;\n"
+                                            "border-radius: 11px;\n"
+                                            "font-family: \'Inter\';\n"
+                                            "font-style: normal;\n"
+                                            "font-weight: 400;\n"
+                                            "font-size: 16px;\n"
+                                            "line-height: 19px;\n"
+                                            "text-align: left;\n"
+                                            "color: #FFFFFF;\n"
+                                            "padding: 8px 0 8px 15px;")
+                active_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            return 200
+
+
+class Ui_MainWindow(Actions_MainWindow, object):
+    """Этот класс используется для настройки интерфейса"""
+
+    class ClickedLabel(QLabel):
+        clicked = pyqtSignal()
 
         def mouseReleaseEvent(self, e):
             super().mouseReleaseEvent(e)
