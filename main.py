@@ -116,6 +116,15 @@ class Ui_MainWindow(Actions_MainWindow, object):
             button.clicked.connect(self.folder_page_setup)
 
     def main_page_setup(self):
+        self.folder_click(self.btn_menu_main, self.active_button)
+        self.active_button = self.btn_menu_main
+        self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
+        self.main.setCurrentIndex(0)
+
+        self.main_page = QtWidgets.QWidget()
+        self.main_page.setObjectName("main_page")
+
         """Настройка главной вкладки"""
 
         self.main_title = QtWidgets.QLabel(self.main_page)
@@ -568,12 +577,87 @@ class Ui_MainWindow(Actions_MainWindow, object):
     def folder_page_setup(self):
         self.folder_page = QtWidgets.QWidget()
 
-        self.gridLayout_4.addLayout(self.task_2_2, 0, 0, 1, 1)
-        self.gridLayout_4.setColumnStretch(0, 1)
-        self.gridLayout_2.addWidget(self.groupBox_8, 1, 0, 1, 1)
+        if self.sender():
+            answer = self.folder_click(self.sender(), self.active_button)
+            self.active_button = self.sender()
 
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
-        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
+            folder = self.cur.execute(f'''SELECT folder_title FROM folders WHERE folder_id = ?''',
+                                      [self.active_button.folder_id]).fetchone()
+
+            tasks = self.cur.execute('''SELECT * FROM tasks WHERE folder_id = ?''',
+                                     [self.active_button.folder_id]).fetchall()
+
+            print(folder[0] if folder else '')
+
+            self.main.setCurrentIndex(1)
+
+            self.folder_title.setText(folder[0])
+        else:
+            self.folder_title = QtWidgets.QLabel(self.folder_page)
+            self.folder_title.setGeometry(QtCore.QRect(25, 45, 927, 29))
+            self.folder_title.setStyleSheet("font-family: \'Inter\';\n"
+                                            "font-style: normal;\n"
+                                            "font-weight: 700;\n"
+                                            "font-size: 27px;\n"
+                                            "line-height: 29px;\n"
+                                            "/* identical to box height, or 121% */\n"
+                                            "\n"
+                                            "letter-spacing: -0.055em;\n"
+                                            "\n"
+                                            "color: #FFFFFF;")
+            self.folder_title.setObjectName("folder_title")
+
+            self.folder_area = QtWidgets.QScrollArea(self.folder_page)
+            self.folder_area.setGeometry(QtCore.QRect(0, 90, 977, 628))
+            self.folder_area.setMinimumSize(QtCore.QSize(977, 628))
+            self.folder_area.setMaximumSize(QtCore.QSize(977, 628))
+            self.folder_area.setStyleSheet("border: 0;")
+            self.folder_area.setWidgetResizable(True)
+            self.folder_area.setObjectName("folder_area")
+
+            self.folder_area_contents = QtWidgets.QWidget()
+            self.folder_area_contents.setGeometry(QtCore.QRect(0, 0, 977, 628))
+            self.folder_area_contents.setObjectName("folder_area_contents")
+
+            self.folder_area_layout = QtWidgets.QVBoxLayout(self.folder_area_contents)
+            self.folder_area_layout.setContentsMargins(25, 0, 25, 25)
+            self.folder_area_layout.setObjectName("folder_area_layout")
+
+            # Task
+            self.task_1_2 = QtWidgets.QFormLayout()
+            self.task_1_2.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
+            self.task_1_2.setRowWrapPolicy(QtWidgets.QFormLayout.DontWrapRows)
+            self.task_1_2.setContentsMargins(-1, 10, -1, -1)
+            self.task_1_2.setObjectName("task_1_2")
+            self.task_btn_1_2 = QtWidgets.QToolButton(self.folder_area_contents)
+            self.task_btn_1_2.setMaximumSize(QtCore.QSize(18, 18))
+            self.task_btn_1_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.task_btn_1_2.setStyleSheet("border: 1px solid #FFFFFF;\n"
+                                            "border-radius: 5px;")
+            self.task_btn_1_2.setText("")
+            self.task_btn_1_2.setObjectName("task_btn_1_2")
+            self.task_1_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn_1_2)
+            self.task_description_1_2 = QtWidgets.QLabel(self.folder_area_contents)
+            self.task_description_1_2.setStyleSheet("font-family: \'Inter\';\n"
+                                                    "font-style: normal;\n"
+                                                    "font-weight: 400;\n"
+                                                    "font-size: 16px;\n"
+                                                    "line-height: 16px;\n"
+                                                    "/* identical to box height, or 100% */\n"
+                                                    "\n"
+                                                    "letter-spacing: -0.055em;\n"
+                                                    "\n"
+                                                    "color: #FFFFFF;")
+            self.task_description_1_2.setWordWrap(False)
+            self.task_description_1_2.setObjectName("task_description_1_2")
+            self.task_1_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description_1_2)
+            self.folder_area_layout.addLayout(self.task_1_2)
+            # end Task
+
+            self.folder_area.setWidget(self.folder_area_contents)
+            self.folder_page.setObjectName("folder_page")
+
+            self.main.addWidget(self.folder_page)
 
     def setupUi(self, MainWindow):
         """Базовая настройка интерфейса"""
@@ -633,14 +717,7 @@ class Ui_MainWindow(Actions_MainWindow, object):
         self.main.setObjectName("main")
 
         self.main_page_setup()
-
-        # folder_page setup
-        self.folder_page = QtWidgets.QWidget()
-        self.folder_page.setObjectName("folder_page")
-
-        self.main.addWidget(self.main_page)
-        self.main.addWidget(self.folder_page)
-        # end Настройка main
+        self.folder_page_setup()
 
         MainWindow.setCentralWidget(self.centralwidget)
 
