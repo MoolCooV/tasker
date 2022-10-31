@@ -26,35 +26,35 @@ class Actions_MainWindow:
     def add_folder(self):
         pass
 
+    def add_task(self):
+        pass
+
     def folder_click(self, sender_btn, active_button):
         if sender_btn == active_button:
-            return 429
+            pass
         else:
-            if sender_btn:
-                sender_btn.setStyleSheet("background: #1490AA;\n"
-                                         "border-radius: 11px;\n"
-                                         "font-family: \'Inter\';\n"
-                                         "font-style: normal;\n"
-                                         "font-weight: 400;\n"
-                                         "font-size: 16px;\n"
-                                         "line-height: 19px;\n"
-                                         "text-align: left;\n"
-                                         "color: #FFFFFF;\n"
-                                         "padding: 8px 0 8px 15px;")
-                sender_btn.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-            if active_button:
-                active_button.setStyleSheet("background: #282828;\n"
-                                            "border-radius: 11px;\n"
-                                            "font-family: \'Inter\';\n"
-                                            "font-style: normal;\n"
-                                            "font-weight: 400;\n"
-                                            "font-size: 16px;\n"
-                                            "line-height: 19px;\n"
-                                            "text-align: left;\n"
-                                            "color: #FFFFFF;\n"
-                                            "padding: 8px 0 8px 15px;")
-                active_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            return 200
+            sender_btn.setStyleSheet("background: #1490AA;\n"
+                                     "border-radius: 11px;\n"
+                                     "font-family: \'Inter\';\n"
+                                     "font-style: normal;\n"
+                                     "font-weight: 400;\n"
+                                     "font-size: 16px;\n"
+                                     "line-height: 19px;\n"
+                                     "text-align: left;\n"
+                                     "color: #FFFFFF;\n"
+                                     "padding: 8px 0 8px 15px;")
+            sender_btn.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+            active_button.setStyleSheet("background: #282828;\n"
+                                        "border-radius: 11px;\n"
+                                        "font-family: \'Inter\';\n"
+                                        "font-style: normal;\n"
+                                        "font-weight: 400;\n"
+                                        "font-size: 16px;\n"
+                                        "line-height: 19px;\n"
+                                        "text-align: left;\n"
+                                        "color: #FFFFFF;\n"
+                                        "padding: 8px 0 8px 15px;")
+            active_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
 
 class Ui_MainWindow(Actions_MainWindow, object):
@@ -583,15 +583,11 @@ class Ui_MainWindow(Actions_MainWindow, object):
 
             folder = self.cur.execute(f'''SELECT folder_title FROM folders WHERE folder_id = ?''',
                                       [self.active_button.folder_id]).fetchone()
-
             tasks = self.cur.execute('''SELECT * FROM tasks WHERE folder_id = ?''',
                                      [self.active_button.folder_id]).fetchall()
 
-            print(folder[0] if folder else '')
-
-            self.main.setCurrentIndex(1)
-
             self.folder_title.setText(folder[0])
+            self.main.setCurrentIndex(1)
         else:
             self.folder_title = QtWidgets.QLabel(self.folder_page)
             self.folder_title.setGeometry(QtCore.QRect(25, 45, 927, 29))
