@@ -555,6 +555,18 @@ class Ui_MainWindow(Actions_MainWindow, object):
         self.task_description_2_2.setObjectName("task_description_2_2")
         self.task_2_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn_2_2)
         self.task_2_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description_2_2)
+        self.main_mainArea_tasks_1_layout.addLayout(self.task_2_2, 0, 0, 1, 1)
+        self.main_mainArea_tasks_1_layout.setColumnStretch(0, 1)
+        # end task
+        # end Настройка main_secondArea
+
+        self.main_mainArea.setWidget(self.main_mainArea_contents)
+        self.main_secondArea.setWidget(self.main_secondArea_contents)
+
+        self.main.addWidget(self.main_page)
+
+    def folder_page_setup(self):
+        self.folder_page = QtWidgets.QWidget()
 
         self.gridLayout_4.addLayout(self.task_2_2, 0, 0, 1, 1)
         self.gridLayout_4.setColumnStretch(0, 1)
