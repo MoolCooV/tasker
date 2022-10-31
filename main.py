@@ -67,21 +67,12 @@ class Ui_MainWindow(Actions_MainWindow, object):
             super().mouseReleaseEvent(e)
             self.clicked.emit()
 
-
-class Ui_MainWindow(object):
-    """Этот класс используется для настройки интерфейса"""
-
-    def __init__(self):
-        self.db = sqlite3.connect('data/tasker_data.db')
-        self.cur = self.db.cursor()
-
     def header_btn_setup(self):
         """Настройка кнопок папок"""
         BTN_HEADER_BASE = 47
         BTN_HEADER_HEIGHT = 37
         BTN_HEADER_SPACING = 10
 
-        _translate = QtCore.QCoreApplication.translate  # Не трогать
         folders = self.cur.execute('''SELECT * FROM folders''').fetchall()
 
         self.btn_menu_main = QtWidgets.QPushButton(self.buttons)
@@ -620,16 +611,9 @@ class Ui_MainWindow(object):
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    """В этом классе находятся функции поведения приложения"""
-
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.btn_add_folder.clicked.connect(self.add_folder)
-
-    # ACTIONS
-    def add_folder(self):
-        print('yes')
 
 
 def except_hook(cls, exception, traceback):
