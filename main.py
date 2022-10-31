@@ -88,7 +88,11 @@ class Ui_MainWindow(Actions_MainWindow, object):
                                          "text-align: left;\n"
                                          "color: #FFFFFF;\n"
                                          "padding: 8px 0 8px 15px;")
+        self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.btn_menu_main.setObjectName("btn_menu_main")
+        self.btn_menu_main.folder_id = -1
+        self.active_button = self.btn_menu_main
+        self.btn_menu_main.clicked.connect(self.main_page_setup)
 
         for index, folder in enumerate(folders):
             button = QtWidgets.QPushButton(self.buttons)
@@ -105,8 +109,11 @@ class Ui_MainWindow(Actions_MainWindow, object):
                                  "text-align: left;\n"
                                  "color: #FFFFFF;\n"
                                  "padding: 8px 0 8px 15px;")
-            button.setObjectName(f"btn_menu{index}")
-            button.setText(_translate("MainWindow", folder[1]))
+            button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            button.setObjectName(f"btn-menu_{index}")
+            button.setText(self._translate("MainWindow", folder[1]))
+            button.folder_id = folder[0]
+            button.clicked.connect(self.folder_page_setup)
 
     def main_page_setup(self):
         """Настройка главной вкладки"""
