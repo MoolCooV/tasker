@@ -12,9 +12,9 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel
 class ClickedLabel(QLabel):
     clicked = pyqtSignal()
 
-    def mouseReleaseEvent(self, e):
-        super().mouseReleaseEvent(e)
-        self.clicked.emit()
+        def mouseReleaseEvent(self, e):
+            super().mouseReleaseEvent(e)
+            self.clicked.emit()
 
 
 class Ui_MainWindow(object):
