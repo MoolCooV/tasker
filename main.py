@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 import sys
-import datetime
+import locale
+import datetime as dt
+import pymorphy2
 import src
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -15,9 +17,10 @@ if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
 
-class Actions:
-    """Класс с методами поведения приложения"""
+class MainWindow_Init(object):
+    """Этот класс используется для настройки интерфейса"""
 
+    # Actions
     def __init__(self):
         self.db = sqlite3.connect('data/tasker_data.db')
         self.cur = self.db.cursor()
@@ -25,9 +28,21 @@ class Actions:
         self._translate = QtCore.QCoreApplication.translate
         self.tasks = []
 
+        locale.setlocale(locale.LC_ALL, "ru")
+        self.date = dt.date.today()
+
+        self.morth = pymorphy2.MorphAnalyzer()
+
     def add_folder(self, folder_name="Привет"):
         self.cur.execute(f'''INSERT INTO folders (folder_title) VALUES (?)''', (folder_name,))
         self.db.commit()
+
+    def task_action(self):
+        self.cur.execute('''UPDATE tasks SET task_status = ? WHERE task_id = ?''',
+                         (not self.sender().status, self.sender().id))
+        self.db.commit()
+
+        self.folder_page_tasks(True)
 
     def add_task(self):
         pass
@@ -64,10 +79,7 @@ class Actions:
                                         "padding: 8px 0 8px 15px;")
             active_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-
-class Ui_MainWindow(Actions, object):
-    """Этот класс используется для настройки интерфейса"""
-
+    # UI
     class ClickedLabel(QLabel):
         clicked = pyqtSignal()
 
@@ -75,7 +87,6 @@ class Ui_MainWindow(Actions, object):
             super().mouseReleaseEvent(e)
             self.clicked.emit()
 
-    # Setups
     def header_btn_setup(self):
         """Настройка кнопок папок"""
         BTN_HEADER_BASE = 47
@@ -124,8 +135,6 @@ class Ui_MainWindow(Actions, object):
 
     def main_page_setup(self):
         """Настройка главной вкладки"""
-
-
 
         self.main_page = QtWidgets.QWidget()
         self.main_page.setObjectName("main_page")
@@ -605,6 +614,8 @@ class Ui_MainWindow(Actions, object):
 
     # Tasks loading
     def main_page_tasks(self):
+        self.reload_tasks()
+
         self.folder_click(self.btn_menu_main, self.active_button)
         self.active_button.setEnabled(True)
         self.active_button = self.btn_menu_main
@@ -615,16 +626,18 @@ class Ui_MainWindow(Actions, object):
 
         self.main.setCurrentIndex(0)
 
-    def folder_page_tasks(self):
+    def folder_page_tasks(self, reload=False):
         self.reload_tasks()
 
-        self.folder_click(self.sender(), self.active_button)
-        self.sender().setEnabled(False)
-        self.active_button.setEnabled(True)
-        self.active_button = self.sender()
+        if not reload:
+            self.folder_click(self.sender(), self.active_button)
+            self.active_button.setEnabled(True)
+            self.sender().setEnabled(False)
+            self.active_button = self.sender()
 
         folder = self.cur.execute(f'''SELECT folder_title FROM folders WHERE folder_id = ?''',
                                   [self.active_button.folder_id]).fetchone()
+
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE folder_id = ?''',
                                  [self.active_button.folder_id]).fetchall()
 
@@ -645,9 +658,23 @@ class Ui_MainWindow(Actions, object):
                 self.task_btn = QtWidgets.QToolButton(self.task)
                 self.task_btn.setMaximumSize(QtCore.QSize(18, 18))
                 self.task_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-                self.task_btn.setStyleSheet("border: 1.25px solid #FFFFFF;\n"
-                                            "border-radius: 5px;")
+
+                if not task[4]:
+                    self.task_btn.setStyleSheet("border: 1.25px solid #FFFFFF;\n"
+                                                "border-radius: 5px;")
+                    self.task_btn.status = False
+                else:
+                    self.task_btn.setStyleSheet("background: #1490AA;\n"
+                                                "border-radius: 5px;")
+                    task_btn_icon = QtGui.QIcon()
+                    task_btn_icon.addPixmap(QtGui.QPixmap(":/src/img/task_done.svg"), QtGui.QIcon.Normal,
+                                            QtGui.QIcon.Off)
+                    self.task_btn.setIcon(task_btn_icon)
+                    self.task_btn.status = True
+
                 self.task_btn.setObjectName(f"task_btn_{index}")
+                self.task_btn.id = task[0]
+                self.task_btn.clicked.connect(self.task_action)
 
                 self.task_description = QtWidgets.QLabel(self.task)
                 self.task_description.setStyleSheet("font-family: \'Inter\';\n"
@@ -661,8 +688,13 @@ class Ui_MainWindow(Actions, object):
                                                     "\n"
                                                     "color: #FFFFFF;")
                 self.task_description.setWordWrap(False)
+                if task[4]:
+                    font = self.task_description.font()
+                    font.setStrikeOut(True)
+                    self.task_description.setFont(font)
                 self.task_description.setObjectName(f"task_description_{index}")
-                self.task_description.setText(self._translate("MainWindow", task[3]))
+                self.task_description.setText(self._translate("MainWindow", f'{task[3]}  {task[2]}'
+                                                              if task[2] else task[3]))
 
                 self.task_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn)
                 self.task_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description)
@@ -772,10 +804,6 @@ class Ui_MainWindow(Actions, object):
         self.main_mainArea_title_1.setText(self._translate("MainWindow", "Сегодня"))
         self.main_mainArea_title_2.setText(self._translate("MainWindow", "Завтра"))
         self.main_mainArea_title_3.setText(self._translate("MainWindow", "Послезавтра"))
-        self.main_mainArea_title_4.setText(self._translate("MainWindow", "Понедельник, 31 октября"))
-        self.main_mainArea_title_5.setText(self._translate("MainWindow", "Вторник, 27 октября"))
-        self.main_mainArea_title_6.setText(self._translate("MainWindow", "Среда, 28 октября"))
-        self.main_mainArea_title_7.setText(self._translate("MainWindow", "Четверг, 29 октября"))
         self.main_secondArea_title_1.setText(self._translate("MainWindow", "Просроченные"))
         self.main_secondArea_title_2.setText(self._translate("MainWindow", "Предстоящие"))
         # TODO(Переделать)
@@ -788,7 +816,7 @@ class Ui_MainWindow(Actions, object):
         self.task_description_2_2.setText(self._translate("MainWindow", "Простое задание"))
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+class MainWindow(QMainWindow, MainWindow_Init):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
