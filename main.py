@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import sqlite3
 import sys
 import locale
@@ -14,6 +16,62 @@ if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
 
 if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
+STYLES = {'main_title': ("font-family: \'Inter\';\n"
+                         "font-style: normal;\n"
+                         "font-weight: 700;\n"
+                         "font-size: 27px;\n"
+                         "line-height: 29px;\n"
+                         "letter-spacing: -0.055em;\n"
+                         "color: #FFFFFF;"),
+          'second_title': ("font-family: \'Inter\';\n"
+                           "font-style: normal;\n"
+                           "font-weight: 700;\n"
+                           "font-size: 24px;\n"
+                           "line-height: 29px;\n"
+                           "letter-spacing: -0.055em;\n"
+                           "color: #FFFFFF;"),
+          'btn_active': ("background: #1490AA;\n"
+                         "border-radius: 11px;\n"
+                         "font-family: \'Inter\';\n"
+                         "font-style: normal;\n"
+                         "font-weight: 400;\n"
+                         "font-size: 16px;\n"
+                         "line-height: 19px;\n"
+                         "text-align: left;\n"
+                         "color: #FFFFFF;\n"
+                         "padding: 8px 0 8px 15px;"),
+          'btn_inactive': ("background: #282828;\n"
+                           "border-radius: 11px;\n"
+                           "font-family: \'Inter\';\n"
+                           "font-style: normal;\n"
+                           "font-weight: 400;\n"
+                           "font-size: 16px;\n"
+                           "line-height: 19px;\n"
+                           "text-align: left;\n"
+                           "color: #FFFFFF;\n"
+                           "padding: 8px 0 8px 15px;"),
+          'task_btn_active': ("background: #1490AA;\n"
+                              "border-radius: 5px;"),
+          'task_btn_inactive': ("border: 1.25px solid #FFFFFF;\n"
+                                "border-radius: 5px;"),
+          'task_description': ("font-family: \'Inter\';\n"
+                               "font-style: normal;\n"
+                               "font-weight: 400;\n"
+                               "font-size: 16px;\n"
+                               "line-height: 16px;\n"
+                               "letter-spacing: -0.055em;\n"
+                               "color: #FFFFFF;"),
+          'no_tasks': ("font-family: \'Inter\';\n"
+                       "font-style: normal;\n"
+                       "font-weight: 400;\n"
+                       "font-size: 16px;\n"
+                       "line-height: 16px;\n"
+                       "/* identical to box height, or 100% */\n"
+                       "\n"
+                       "letter-spacing: -0.055em;\n"
+                       "\n"
+                       "color: #A3A3A3;")}
 
 
 class MainWindow_Init(object):
@@ -36,27 +94,9 @@ class MainWindow_Init(object):
         if sender_btn == active_button:
             pass
         else:
-            sender_btn.setStyleSheet("background: #1490AA;\n"
-                                     "border-radius: 11px;\n"
-                                     "font-family: \'Inter\';\n"
-                                     "font-style: normal;\n"
-                                     "font-weight: 400;\n"
-                                     "font-size: 16px;\n"
-                                     "line-height: 19px;\n"
-                                     "text-align: left;\n"
-                                     "color: #FFFFFF;\n"
-                                     "padding: 8px 0 8px 15px;")
+            sender_btn.setStyleSheet(STYLES['btn_active'])
             sender_btn.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-            active_button.setStyleSheet("background: #282828;\n"
-                                        "border-radius: 11px;\n"
-                                        "font-family: \'Inter\';\n"
-                                        "font-style: normal;\n"
-                                        "font-weight: 400;\n"
-                                        "font-size: 16px;\n"
-                                        "line-height: 19px;\n"
-                                        "text-align: left;\n"
-                                        "color: #FFFFFF;\n"
-                                        "padding: 8px 0 8px 15px;")
+            active_button.setStyleSheet(STYLES['btn_inactive'])
             active_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
     def add_folder(self, folder_name):
@@ -96,106 +136,86 @@ class MainWindow_Init(object):
         folder_space.setObjectName("folder_space")
 
         if tasks:
-            for index, task in enumerate(tasks):
-                self.task = QtWidgets.QGroupBox(container)
+            for index, task_info in enumerate(tasks):
+                task = QtWidgets.QGroupBox(container)
                 sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-                sizePolicy.setHeightForWidth(self.task.sizePolicy().hasHeightForWidth())
-                self.task.setSizePolicy(sizePolicy)
-                self.task.setObjectName(f"task_{index}")
+                sizePolicy.setHeightForWidth(task.sizePolicy().hasHeightForWidth())
+                task.setSizePolicy(sizePolicy)
+                task.setObjectName(f"task_{index}")
 
-                self.task_layout = QtWidgets.QFormLayout(self.task)
-                self.task_layout.setContentsMargins(0, 0, 0, 0)
-                self.task_layout.setObjectName(f"task_layout_{index}")
+                task_layout = QtWidgets.QFormLayout(task)
+                task_layout.setContentsMargins(0, 0, 0, 0)
+                task_layout.setObjectName(f"task_layout_{index}")
 
-                self.task_btn = QtWidgets.QToolButton(self.task)
-                self.task_btn.setMaximumSize(QtCore.QSize(18, 18))
-                self.task_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+                task_btn = QtWidgets.QToolButton(task)
+                task_btn.setMaximumSize(QtCore.QSize(18, 18))
+                task_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-                if not task[4]:
-                    self.task_btn.setStyleSheet("border: 1.25px solid #FFFFFF;\n"
-                                                "border-radius: 5px;")
-                    self.task_btn.status = False
+                if not task_info[4]:
+                    task_btn.setStyleSheet(STYLES['task_btn_inactive'])
+                    task_btn.status = False
                 else:
-                    self.task_btn.setStyleSheet("background: #1490AA;\n"
-                                                "border-radius: 5px;")
+                    task_btn.setStyleSheet(STYLES['task_btn_active'])
                     task_btn_icon = QtGui.QIcon()
                     task_btn_icon.addPixmap(QtGui.QPixmap(":/src/img/task_done.svg"), QtGui.QIcon.Normal,
                                             QtGui.QIcon.Off)
-                    self.task_btn.setIcon(task_btn_icon)
-                    self.task_btn.status = True
+                    task_btn.setIcon(task_btn_icon)
+                    task_btn.status = True
 
-                self.task_btn.setObjectName(f"task_btn_{index}")
-                self.task_btn.id = task[0]
-                self.task_btn.clicked.connect(self.task_action)
+                task_btn.setObjectName(f"task_btn_{index}")
+                task_btn.id = task_info[0]
+                task_btn.clicked.connect(self.task_action)
 
-                self.task_description = self.ClickedLabel(self.task)
-                self.task_description.setStyleSheet("font-family: \'Inter\';\n"
-                                                    "font-style: normal;\n"
-                                                    "font-weight: 400;\n"
-                                                    "font-size: 16px;\n"
-                                                    "line-height: 16px;\n"
-                                                    "/* identical to box height, or 100% */\n"
-                                                    "\n"
-                                                    "letter-spacing: -0.055em;\n"
-                                                    "\n"
-                                                    "color: #FFFFFF;")
-                self.task_description.setWordWrap(False)
-                self.task_description.id = task[0]
+                task_description = self.ClickedLabel(task)
+                task_description.setStyleSheet(STYLES['task_description'])
+                task_description.setWordWrap(False)
+                task_description.id = task_info[0]
 
-                if task[4]:
-                    font = self.task_description.font()
+                if task_info[4]:
+                    font = task_description.font()
                     font.setStrikeOut(True)
-                    self.task_description.setFont(font)
-                    self.task_description.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-                    self.task_description.clicked.connect(self.delete_task)
+                    task_description.setFont(font)
+                    task_description.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+                    task_description.clicked.connect(self.delete_task)
 
-                self.task_description.setObjectName(f"task_description_{index}")
-                self.task_description.setText(self._translate("MainWindow", f'{task[3]}  {task[2]}'
-                if (task[2] and not isMainPage) else task[3]))
+                task_description.setObjectName(f"task_description_{index}")
+                task_description.setText(self._translate("MainWindow", f'{task_info[3]}  {task_info[2]}'
+                                         if (task_info[2] and not isMainPage) else task_info[3]))
 
                 if isMainPage:
-                    self.task_btn.page = self.task_description.page = 'main'
+                    task_btn.page = task_description.page = 'main'
                 else:
-                    self.task_btn.page = self.task_description.page = 'folder'
+                    task_btn.page = task_description.page = 'folder'
 
-                self.task_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn)
-                self.task_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description)
+                task_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, task_btn)
+                task_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, task_description)
 
-                layout.addWidget(self.task)
+                layout.addWidget(task)
 
-                self.tasks.append(self.task)
+                self.tasks.append(task)
 
             self.tasks.append(folder_space)
             layout.addWidget(folder_space)
         else:
-            self.folder_no_tasks = QtWidgets.QGroupBox(container)
-            self.folder_no_tasks.setObjectName("folder_no_tasks")
+            no_tasks = QtWidgets.QGroupBox(container)
+            no_tasks.setObjectName("no_tasks")
 
-            self.folder_no_tasks_layout = QtWidgets.QFormLayout(self.folder_no_tasks)
-            self.folder_no_tasks_layout.setContentsMargins(0, 0, 0, 0)
-            self.folder_no_tasks_layout.setObjectName("folder_no_tasks_layout")
+            no_tasks_layout = QtWidgets.QFormLayout(no_tasks)
+            no_tasks_layout.setContentsMargins(0, 0, 0, 0)
+            no_tasks_layout.setObjectName("no_tasks_layout")
 
-            self.folder_no_tasks_description = QtWidgets.QLabel(self.folder_no_tasks)
-            self.folder_no_tasks_description.setStyleSheet("font-family: \'Inter\';\n"
-                                                           "font-style: normal;\n"
-                                                           "font-weight: 400;\n"
-                                                           "font-size: 16px;\n"
-                                                           "line-height: 16px;\n"
-                                                           "/* identical to box height, or 100% */\n"
-                                                           "\n"
-                                                           "letter-spacing: -0.055em;\n"
-                                                           "\n"
-                                                           "color: #A3A3A3;")
-            self.folder_no_tasks_description.setObjectName("folder_no_tasks_description")
-            self.folder_no_tasks_description.setText(self._translate("MainWindow", "Задач нет"))
+            no_tasks_description = QtWidgets.QLabel(no_tasks)
+            no_tasks_description.setStyleSheet(STYLES['no_tasks'])
+            no_tasks_description.setObjectName("no_tasks_description")
+            no_tasks_description.setText(self._translate("MainWindow", "Задач нет"))
 
-            self.folder_no_tasks_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole,
-                                                  self.folder_no_tasks_description)
+            no_tasks_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole,
+                                      no_tasks_description)
 
-            self.folder_no_tasks.setLayout(self.folder_no_tasks_layout)
-            layout.addWidget(self.folder_no_tasks)
+            no_tasks.setLayout(no_tasks_layout)
+            layout.addWidget(no_tasks)
 
-            self.tasks.append(self.folder_no_tasks)
+            self.tasks.append(no_tasks)
 
     # UI
     class ClickedLabel(QLabel):
@@ -215,16 +235,7 @@ class MainWindow_Init(object):
 
         self.btn_menu_main = QtWidgets.QPushButton(self.buttons)
         self.btn_menu_main.setGeometry(QtCore.QRect(0, 0, 219, 37))
-        self.btn_menu_main.setStyleSheet("background: #1490AA;\n"
-                                         "border-radius: 11px;\n"
-                                         "font-family: \'Inter\';\n"
-                                         "font-style: normal;\n"
-                                         "font-weight: 400;\n"
-                                         "font-size: 16px;\n"
-                                         "line-height: 19px;\n"
-                                         "text-align: left;\n"
-                                         "color: #FFFFFF;\n"
-                                         "padding: 8px 0 8px 15px;")
+        self.btn_menu_main.setStyleSheet(STYLES['btn_active'])
         self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.btn_menu_main.setObjectName("btn_menu_main")
         self.btn_menu_main.folder_id = -1
@@ -235,16 +246,7 @@ class MainWindow_Init(object):
             button = QtWidgets.QPushButton(self.buttons)
             button.setGeometry(QtCore.QRect(0, BTN_HEADER_BASE + ((BTN_HEADER_HEIGHT + BTN_HEADER_SPACING) * index),
                                             219, 37))
-            button.setStyleSheet("background: #282828;\n"
-                                 "border-radius: 11px;\n"
-                                 "font-family: \'Inter\';\n"
-                                 "font-style: normal;\n"
-                                 "font-weight: 400;\n"
-                                 "font-size: 16px;\n"
-                                 "line-height: 19px;\n"
-                                 "text-align: left;\n"
-                                 "color: #FFFFFF;\n"
-                                 "padding: 8px 0 8px 15px;")
+            button.setStyleSheet(STYLES['btn_inactive'])
             button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             button.setObjectName(f"btn-menu_{index}")
             button.setText(self._translate("MainWindow", folder[1]))
@@ -259,16 +261,7 @@ class MainWindow_Init(object):
 
         self.main_title = QtWidgets.QLabel(self.main_page)
         self.main_title.setGeometry(QtCore.QRect(25, 45, 927, 29))
-        self.main_title.setStyleSheet("font-family: \'Inter\';\n"
-                                      "font-style: normal;\n"
-                                      "font-weight: 700;\n"
-                                      "font-size: 27px;\n"
-                                      "line-height: 29px;\n"
-                                      "/* identical to box height, or 121% */\n"
-                                      "\n"
-                                      "letter-spacing: -0.055em;\n"
-                                      "\n"
-                                      "color: #FFFFFF;")
+        self.main_title.setStyleSheet(STYLES['main_title'])
         self.main_title.setObjectName("main_title")
 
         # - Настройка main_mainArea
@@ -290,114 +283,42 @@ class MainWindow_Init(object):
         # 1
         self.main_mainArea_title_1 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_1.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_1.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_1.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_1.setObjectName("main_mainArea_title_2")
         # 2
         self.main_mainArea_title_2 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_2.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_2.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_2.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_2.setObjectName("main_mainArea_title_2")
         # 3
         self.main_mainArea_title_3 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_3.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_3.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_3.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_3.setObjectName("main_mainArea_title_3")
         # 4
         self.main_mainArea_title_4 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_4.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_4.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_4.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_4.setObjectName("main_mainArea_title_4")
         # 5
         self.main_mainArea_title_5 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_5.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_5.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_5.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_5.setObjectName("title_5")
         # 6
         self.main_mainArea_title_6 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_6.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_6.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_6.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_6.setObjectName("main_mainArea_title_6")
         # 7
         self.main_mainArea_title_7 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_7.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_7.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_7.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_7.setObjectName("main_mainArea_title_7")
         # 8
         self.main_mainArea_title_8 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_8.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_mainArea_title_8.setStyleSheet("font-family: \'Inter\';\n"
-                                                 "font-style: normal;\n"
-                                                 "font-weight: 700;\n"
-                                                 "font-size: 24px;\n"
-                                                 "line-height: 29px;\n"
-                                                 "/* identical to box height, or 121% */\n"
-                                                 "\n"
-                                                 "letter-spacing: -0.055em;\n"
-                                                 "\n"
-                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_8.setStyleSheet(STYLES['second_title'])
         self.main_mainArea_title_8.setObjectName("main_mainArea_title_8")
 
         # - tasks
@@ -480,8 +401,7 @@ class MainWindow_Init(object):
         self.main_secondArea = QtWidgets.QScrollArea(self.main_page)
         self.main_secondArea.setGeometry(QtCore.QRect(708, 20, 271, 691))
         self.main_secondArea.setMaximumSize(QtCore.QSize(16777215, 691))
-        self.main_secondArea.setStyleSheet("border: 0;\n"
-                                           "background: #151515;")
+        self.main_secondArea.setStyleSheet("border: 0;\nbackground: #151515;")
         self.main_secondArea.setWidgetResizable(True)
         self.main_secondArea.setObjectName("main_secondArea")
 
@@ -497,30 +417,12 @@ class MainWindow_Init(object):
         # 1
         self.main_secondArea_title_1 = QtWidgets.QLabel(self.main_secondArea_contents)
         self.main_secondArea_title_1.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_secondArea_title_1.setStyleSheet("font-family: \'Inter\';\n"
-                                                   "font-style: normal;\n"
-                                                   "font-weight: 700;\n"
-                                                   "font-size: 24px;\n"
-                                                   "line-height: 29px;\n"
-                                                   "/* identical to box height, or 121% */\n"
-                                                   "\n"
-                                                   "letter-spacing: -0.055em;\n"
-                                                   "\n"
-                                                   "color: #FFFFFF;")
+        self.main_secondArea_title_1.setStyleSheet(STYLES['second_title'])
         self.main_secondArea_title_1.setObjectName("main_secondArea_title_1")
         # 2
         self.main_secondArea_title_2 = QtWidgets.QLabel(self.main_secondArea_contents)
         self.main_secondArea_title_2.setMaximumSize(QtCore.QSize(16777215, 29))
-        self.main_secondArea_title_2.setStyleSheet("font-family: \'Inter\';\n"
-                                                   "font-style: normal;\n"
-                                                   "font-weight: 700;\n"
-                                                   "font-size: 24px;\n"
-                                                   "line-height: 29px;\n"
-                                                   "/* identical to box height, or 121% */\n"
-                                                   "\n"
-                                                   "letter-spacing: -0.055em;\n"
-                                                   "\n"
-                                                   "color: #FFFFFF;")
+        self.main_secondArea_title_2.setStyleSheet(STYLES['second_title'])
         self.main_secondArea_title_2.setObjectName("main_secondArea_title_2")
 
         self.main_secondArea_layout.addWidget(self.main_secondArea_title_1, 0, 0, 1, 1)
@@ -556,16 +458,7 @@ class MainWindow_Init(object):
 
         self.folder_title = QtWidgets.QLabel(self.folder_page)
         self.folder_title.setGeometry(QtCore.QRect(25, 45, 927, 29))
-        self.folder_title.setStyleSheet("font-family: \'Inter\';\n"
-                                        "font-style: normal;\n"
-                                        "font-weight: 700;\n"
-                                        "font-size: 27px;\n"
-                                        "line-height: 29px;\n"
-                                        "/* identical to box height, or 121% */\n"
-                                        "\n"
-                                        "letter-spacing: -0.055em;\n"
-                                        "\n"
-                                        "color: #FFFFFF;")
+        self.folder_title.setStyleSheet(STYLES['main_title'])
         self.folder_title.setObjectName("folder_title")
 
         self.folder_area = QtWidgets.QScrollArea(self.folder_page)
@@ -692,8 +585,7 @@ class MainWindow_Init(object):
         self.header = QtWidgets.QGroupBox(self.centralwidget)
         self.header.setEnabled(True)
         self.header.setGeometry(QtCore.QRect(0, 0, 269, 698))
-        self.header.setStyleSheet("border: 0;\n"
-                                  "background: #151515;")
+        self.header.setStyleSheet("border: 0;\nbackground: #151515;")
         self.header.setObjectName("header")
         # - Logo
         self.logo = QtWidgets.QLabel(self.header)
