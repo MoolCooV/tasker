@@ -151,7 +151,7 @@ class MainWindow_Init(object):
 
                 self.task_description.setObjectName(f"task_description_{index}")
                 self.task_description.setText(self._translate("MainWindow", f'{task[3]}  {task[2]}'
-                                              if (task[2] and not isMainPage) else task[3]))
+                if (task[2] and not isMainPage) else task[3]))
 
                 if isMainPage:
                     self.task_btn.page = self.task_description.page = 'main'
@@ -301,7 +301,6 @@ class MainWindow_Init(object):
                                                  "\n"
                                                  "color: #FFFFFF;")
         self.main_mainArea_title_1.setObjectName("main_mainArea_title_2")
-        self.main_mainArea_grid.addWidget(self.main_mainArea_title_1, 0, 0, 1, 1)
         # 2
         self.main_mainArea_title_2 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_2.setMaximumSize(QtCore.QSize(16777215, 29))
@@ -316,7 +315,6 @@ class MainWindow_Init(object):
                                                  "\n"
                                                  "color: #FFFFFF;")
         self.main_mainArea_title_2.setObjectName("main_mainArea_title_2")
-        self.main_mainArea_grid.addWidget(self.main_mainArea_title_2, 0, 1, 1, 1)
         # 3
         self.main_mainArea_title_3 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_3.setMaximumSize(QtCore.QSize(16777215, 29))
@@ -331,7 +329,6 @@ class MainWindow_Init(object):
                                                  "\n"
                                                  "color: #FFFFFF;")
         self.main_mainArea_title_3.setObjectName("main_mainArea_title_3")
-        self.main_mainArea_grid.addWidget(self.main_mainArea_title_3, 3, 0, 1, 1)
         # 4
         self.main_mainArea_title_4 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_4.setMaximumSize(QtCore.QSize(16777215, 29))
@@ -346,7 +343,6 @@ class MainWindow_Init(object):
                                                  "\n"
                                                  "color: #FFFFFF;")
         self.main_mainArea_title_4.setObjectName("main_mainArea_title_4")
-        self.main_mainArea_grid.addWidget(self.main_mainArea_title_4, 3, 1, 1, 1)
         # 5
         self.main_mainArea_title_5 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_5.setMaximumSize(QtCore.QSize(16777215, 29))
@@ -361,7 +357,6 @@ class MainWindow_Init(object):
                                                  "\n"
                                                  "color: #FFFFFF;")
         self.main_mainArea_title_5.setObjectName("title_5")
-        self.main_mainArea_grid.addWidget(self.main_mainArea_title_5, 5, 0, 1, 1)
         # 6
         self.main_mainArea_title_6 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_6.setMaximumSize(QtCore.QSize(16777215, 29))
@@ -376,7 +371,6 @@ class MainWindow_Init(object):
                                                  "\n"
                                                  "color: #FFFFFF;")
         self.main_mainArea_title_6.setObjectName("main_mainArea_title_6")
-        self.main_mainArea_grid.addWidget(self.main_mainArea_title_6, 5, 1, 1, 1)
         # 7
         self.main_mainArea_title_7 = QtWidgets.QLabel(self.main_mainArea_contents)
         self.main_mainArea_title_7.setMaximumSize(QtCore.QSize(16777215, 29))
@@ -391,7 +385,20 @@ class MainWindow_Init(object):
                                                  "\n"
                                                  "color: #FFFFFF;")
         self.main_mainArea_title_7.setObjectName("main_mainArea_title_7")
-        self.main_mainArea_grid.addWidget(self.main_mainArea_title_7, 7, 0, 1, 1)
+        # 8
+        self.main_mainArea_title_8 = QtWidgets.QLabel(self.main_mainArea_contents)
+        self.main_mainArea_title_8.setMaximumSize(QtCore.QSize(16777215, 29))
+        self.main_mainArea_title_8.setStyleSheet("font-family: \'Inter\';\n"
+                                                 "font-style: normal;\n"
+                                                 "font-weight: 700;\n"
+                                                 "font-size: 24px;\n"
+                                                 "line-height: 29px;\n"
+                                                 "/* identical to box height, or 121% */\n"
+                                                 "\n"
+                                                 "letter-spacing: -0.055em;\n"
+                                                 "\n"
+                                                 "color: #FFFFFF;")
+        self.main_mainArea_title_8.setObjectName("main_mainArea_title_8")
 
         # - tasks
         # 1
@@ -443,7 +450,21 @@ class MainWindow_Init(object):
         self.main_mainArea_tasks_7_layout.setContentsMargins(0, 5, 0, 0)
         self.main_mainArea_tasks_7_layout.setObjectName("main_mainArea_tasks_7_layout")
 
-        self.main_page_tasks()
+        # 8
+        self.main_mainArea_tasks_8 = QtWidgets.QGroupBox(self.main_mainArea_contents)
+        self.main_mainArea_tasks_8.setObjectName("main_mainArea_tasks_7")
+        self.main_mainArea_tasks_8_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_8)
+        self.main_mainArea_tasks_8_layout.setContentsMargins(0, 5, 0, 0)
+        self.main_mainArea_tasks_8_layout.setObjectName("main_mainArea_tasks_8_layout")
+
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_1, 0, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_2, 0, 1, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_3, 3, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_4, 3, 1, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_5, 5, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_6, 5, 1, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_7, 7, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_title_8, 7, 1, 1, 1)
 
         self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_1, 1, 0, 1, 1)
         self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_2, 1, 1, 1, 1)
@@ -452,6 +473,7 @@ class MainWindow_Init(object):
         self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_5, 6, 0, 1, 1)
         self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_6, 6, 1, 1, 1)
         self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_7, 8, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_8, 8, 1, 1, 1)
         # end Настройка main_mainArea
 
         # Настройка main_secondArea
@@ -462,13 +484,14 @@ class MainWindow_Init(object):
                                            "background: #151515;")
         self.main_secondArea.setWidgetResizable(True)
         self.main_secondArea.setObjectName("main_secondArea")
+
         self.main_secondArea_contents = QtWidgets.QWidget()
         self.main_secondArea_contents.setGeometry(QtCore.QRect(0, 0, 271, 691))
         self.main_secondArea_contents.setObjectName("main_secondArea_contents")
 
-        self.main_secondArea_grid = QtWidgets.QGridLayout(self.main_secondArea_contents)
-        self.main_secondArea_grid.setContentsMargins(25, 25, 25, 25)
-        self.main_secondArea_grid.setObjectName("main_secondArea_grid")
+        self.main_secondArea_layout = QtWidgets.QGridLayout(self.main_secondArea_contents)
+        self.main_secondArea_layout.setContentsMargins(25, 25, 25, 25)
+        self.main_secondArea_layout.setObjectName("main_secondArea_layout")
 
         # - Titles
         # 1
@@ -500,24 +523,27 @@ class MainWindow_Init(object):
                                                    "color: #FFFFFF;")
         self.main_secondArea_title_2.setObjectName("main_secondArea_title_2")
 
-        self.main_secondArea_grid.addWidget(self.main_secondArea_title_1, 0, 0, 1, 1)
-        self.main_secondArea_grid.addWidget(self.main_secondArea_title_2, 2, 0, 1, 1)
+        self.main_secondArea_layout.addWidget(self.main_secondArea_title_1, 0, 0, 1, 1)
+        self.main_secondArea_layout.addWidget(self.main_secondArea_title_2, 2, 0, 1, 1)
         # - end Titles
 
         # - groups
         self.main_secondArea_tasks_1 = QtWidgets.QGroupBox(self.main_secondArea_contents)
         self.main_secondArea_tasks_1.setObjectName("main_secondArea_group_2")
-        self.main_secondArea_grid.addWidget(self.main_secondArea_tasks_1, 1, 0, 1, 1)
-
-        self.main_secondArea_group_2 = QtWidgets.QGroupBox(self.main_secondArea_contents)
-        self.main_secondArea_group_2.setObjectName("main_mainArea_tasks_1")
-        self.main_secondArea_grid.addWidget(self.main_secondArea_group_2, 3, 0, 1, 1)
-        # - end groups
-
-        self.main_secondArea_tasks_1_layout = QtWidgets.QGridLayout(self.main_secondArea_tasks_1)
-        self.main_secondArea_tasks_1_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-        self.main_secondArea_tasks_1_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_secondArea_tasks_1_layout = QtWidgets.QVBoxLayout(self.main_secondArea_tasks_1)
+        self.main_secondArea_tasks_1_layout.setContentsMargins(0, 5, 0, 0)
         self.main_secondArea_tasks_1_layout.setObjectName("main_mainArea_tasks_1_layout")
+
+        self.main_secondArea_tasks_2 = QtWidgets.QGroupBox(self.main_secondArea_contents)
+        self.main_secondArea_tasks_2.setObjectName("main_secondArea_tasks_2")
+        self.main_secondArea_tasks_2_layout = QtWidgets.QVBoxLayout(self.main_secondArea_tasks_2)
+        self.main_secondArea_tasks_2_layout.setContentsMargins(0, 5, 0, 0)
+        self.main_secondArea_tasks_2_layout.setObjectName("main_secondArea_tasks_2_layout")
+
+        self.main_secondArea_layout.addWidget(self.main_secondArea_tasks_1, 1, 0, 1, 1)
+        self.main_secondArea_layout.addWidget(self.main_secondArea_tasks_2, 3, 0, 1, 1)
+
+        self.main_page_tasks()
 
         self.main_mainArea.setWidget(self.main_mainArea_contents)
         self.main_secondArea.setWidget(self.main_secondArea_contents)
@@ -573,54 +599,53 @@ class MainWindow_Init(object):
             self.active_button.setEnabled(False)
             self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
+        # MainArea
         # 1
         date = self.date.strftime('%d.%m')
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
-        print(date, tasks)
-
         self.load_tasks(tasks, True, self.main_mainArea_tasks_1, self.main_mainArea_tasks_1_layout)
 
         # 2
         date = (self.date + dt.timedelta(days=1)).strftime('%d.%m')
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
-
-        print(date, tasks)
         self.load_tasks(tasks, True, self.main_mainArea_tasks_2, self.main_mainArea_tasks_2_layout)
 
         # 3
         date = (self.date + dt.timedelta(days=2)).strftime('%d.%m')
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
-
-        print(date, tasks)
         self.load_tasks(tasks, True, self.main_mainArea_tasks_3, self.main_mainArea_tasks_3_layout)
 
         # 4
         date = (self.date + dt.timedelta(days=3)).strftime('%d.%m')
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
-
-        print(date, tasks)
         self.load_tasks(tasks, True, self.main_mainArea_tasks_4, self.main_mainArea_tasks_4_layout)
 
         # 5
         date = (self.date + dt.timedelta(days=4)).strftime('%d.%m')
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
-
-        print(date, tasks)
         self.load_tasks(tasks, True, self.main_mainArea_tasks_5, self.main_mainArea_tasks_5_layout)
 
         # 6
         date = (self.date + dt.timedelta(days=5)).strftime('%d.%m')
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
-
-        print(date, tasks)
         self.load_tasks(tasks, True, self.main_mainArea_tasks_6, self.main_mainArea_tasks_6_layout)
 
         # 7
         date = (self.date + dt.timedelta(days=6)).strftime('%d.%m')
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
-
-        print(date, tasks)
         self.load_tasks(tasks, True, self.main_mainArea_tasks_7, self.main_mainArea_tasks_7_layout)
+        # 8
+        date = self.date + dt.timedelta(days=6)
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date > ?''', (date,)).fetchall()
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_8, self.main_mainArea_tasks_8_layout)
+
+        # SecondArea
+        # 1
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date < ?''', (self.date,)).fetchall()
+        self.load_tasks(tasks, True, self.main_secondArea_tasks_1, self.main_secondArea_tasks_1_layout)
+        # 2
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date IS NULL''').fetchall()
+        self.load_tasks(tasks, True, self.main_secondArea_tasks_2, self.main_secondArea_tasks_2_layout)
 
         self.main.setCurrentIndex(0)
 
@@ -710,8 +735,9 @@ class MainWindow_Init(object):
         self.main_mainArea_title_1.setText(self._translate("MainWindow", "Сегодня"))
         self.main_mainArea_title_2.setText(self._translate("MainWindow", "Завтра"))
         self.main_mainArea_title_3.setText(self._translate("MainWindow", "Послезавтра"))
+        self.main_mainArea_title_8.setText(self._translate("MainWindow", "Предстоящие"))
         self.main_secondArea_title_1.setText(self._translate("MainWindow", "Просроченные"))
-        self.main_secondArea_title_2.setText(self._translate("MainWindow", "Предстоящие"))
+        self.main_secondArea_title_2.setText(self._translate("MainWindow", "Без даты"))
 
 
 class MainWindow(QMainWindow, MainWindow_Init):
