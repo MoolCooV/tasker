@@ -3,7 +3,6 @@ import sqlite3
 import sys
 import locale
 import datetime as dt
-import pymorphy2
 import src
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -31,28 +30,9 @@ class MainWindow_Init(object):
         locale.setlocale(locale.LC_ALL, "ru")
         self.date = dt.date.today()
 
-        self.morth = pymorphy2.MorphAnalyzer()
-
-    def add_folder(self, folder_name="Привет"):
-        self.cur.execute(f'''INSERT INTO folders (folder_title) VALUES (?)''', (folder_name,))
-        self.db.commit()
-
-    def task_action(self):
-        self.cur.execute('''UPDATE tasks SET task_status = ? WHERE task_id = ?''',
-                         (not self.sender().status, self.sender().id))
-        self.db.commit()
-
-        self.folder_page_tasks(True)
-
-    def add_task(self):
-        pass
-
-    def reload_tasks(self):
-        for task in self.tasks:
-            task.deleteLater()
-        self.tasks.clear()
-
-    def folder_click(self, sender_btn, active_button):
+    # Folder actions
+    @staticmethod
+    def folder_click(sender_btn, active_button):
         if sender_btn == active_button:
             pass
         else:
@@ -78,6 +58,144 @@ class MainWindow_Init(object):
                                         "color: #FFFFFF;\n"
                                         "padding: 8px 0 8px 15px;")
             active_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+
+    def add_folder(self, folder_name):
+        self.cur.execute(f'''INSERT INTO folders (folder_title) VALUES (?)''', (folder_name,))
+        self.db.commit()
+
+    # Task actions
+    def task_action(self):
+        self.cur.execute('''UPDATE tasks SET task_status = ? WHERE task_id = ?''',
+                         (not self.sender().status, self.sender().id))
+        self.db.commit()
+
+        if self.sender().page == 'main':
+            self.main_page_tasks(True)
+        elif self.sender().page == 'folder':
+            self.folder_page_tasks(True)
+
+    def add_task(self):
+        pass
+
+    def delete_task(self):
+        self.cur.execute('''DELETE FROM tasks WHERE task_id = ?''', (self.sender().id,))
+        self.db.commit()
+
+        if self.sender().page == 'main':
+            self.main_page_tasks(True)
+        elif self.sender().page == 'folder':
+            self.folder_page_tasks(True)
+
+    def reload_tasks(self):
+        for task in self.tasks:
+            task.deleteLater()
+        self.tasks.clear()
+
+    def load_tasks(self, tasks, isMainPage, container, layout):
+        folder_space = QtWidgets.QLabel()
+        folder_space.setObjectName("folder_space")
+
+        if tasks:
+            for index, task in enumerate(tasks):
+                self.task = QtWidgets.QGroupBox(container)
+                sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+                sizePolicy.setHeightForWidth(self.task.sizePolicy().hasHeightForWidth())
+                self.task.setSizePolicy(sizePolicy)
+                self.task.setObjectName(f"task_{index}")
+
+                self.task_layout = QtWidgets.QFormLayout(self.task)
+                self.task_layout.setContentsMargins(0, 0, 0, 0)
+                self.task_layout.setObjectName(f"task_layout_{index}")
+
+                self.task_btn = QtWidgets.QToolButton(self.task)
+                self.task_btn.setMaximumSize(QtCore.QSize(18, 18))
+                self.task_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+
+                if not task[4]:
+                    self.task_btn.setStyleSheet("border: 1.25px solid #FFFFFF;\n"
+                                                "border-radius: 5px;")
+                    self.task_btn.status = False
+                else:
+                    self.task_btn.setStyleSheet("background: #1490AA;\n"
+                                                "border-radius: 5px;")
+                    task_btn_icon = QtGui.QIcon()
+                    task_btn_icon.addPixmap(QtGui.QPixmap(":/src/img/task_done.svg"), QtGui.QIcon.Normal,
+                                            QtGui.QIcon.Off)
+                    self.task_btn.setIcon(task_btn_icon)
+                    self.task_btn.status = True
+
+                self.task_btn.setObjectName(f"task_btn_{index}")
+                self.task_btn.id = task[0]
+                self.task_btn.clicked.connect(self.task_action)
+
+                self.task_description = self.ClickedLabel(self.task)
+                self.task_description.setStyleSheet("font-family: \'Inter\';\n"
+                                                    "font-style: normal;\n"
+                                                    "font-weight: 400;\n"
+                                                    "font-size: 16px;\n"
+                                                    "line-height: 16px;\n"
+                                                    "/* identical to box height, or 100% */\n"
+                                                    "\n"
+                                                    "letter-spacing: -0.055em;\n"
+                                                    "\n"
+                                                    "color: #FFFFFF;")
+                self.task_description.setWordWrap(False)
+                self.task_description.id = task[0]
+
+                if task[4]:
+                    font = self.task_description.font()
+                    font.setStrikeOut(True)
+                    self.task_description.setFont(font)
+                    self.task_description.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+                    self.task_description.clicked.connect(self.delete_task)
+
+                self.task_description.setObjectName(f"task_description_{index}")
+                self.task_description.setText(self._translate("MainWindow", f'{task[3]}  {task[2]}'
+                                              if (task[2] and not isMainPage) else task[3]))
+
+                if isMainPage:
+                    self.task_btn.page = self.task_description.page = 'main'
+                else:
+                    self.task_btn.page = self.task_description.page = 'folder'
+
+                self.task_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn)
+                self.task_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description)
+
+                layout.addWidget(self.task)
+
+                self.tasks.append(self.task)
+
+            self.tasks.append(folder_space)
+            layout.addWidget(folder_space)
+        else:
+            self.folder_no_tasks = QtWidgets.QGroupBox(container)
+            self.folder_no_tasks.setObjectName("folder_no_tasks")
+
+            self.folder_no_tasks_layout = QtWidgets.QFormLayout(self.folder_no_tasks)
+            self.folder_no_tasks_layout.setContentsMargins(0, 0, 0, 0)
+            self.folder_no_tasks_layout.setObjectName("folder_no_tasks_layout")
+
+            self.folder_no_tasks_description = QtWidgets.QLabel(self.folder_no_tasks)
+            self.folder_no_tasks_description.setStyleSheet("font-family: \'Inter\';\n"
+                                                           "font-style: normal;\n"
+                                                           "font-weight: 400;\n"
+                                                           "font-size: 16px;\n"
+                                                           "line-height: 16px;\n"
+                                                           "/* identical to box height, or 100% */\n"
+                                                           "\n"
+                                                           "letter-spacing: -0.055em;\n"
+                                                           "\n"
+                                                           "color: #A3A3A3;")
+            self.folder_no_tasks_description.setObjectName("folder_no_tasks_description")
+            self.folder_no_tasks_description.setText(self._translate("MainWindow", "Задач нет"))
+
+            self.folder_no_tasks_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole,
+                                                  self.folder_no_tasks_description)
+
+            self.folder_no_tasks.setLayout(self.folder_no_tasks_layout)
+            layout.addWidget(self.folder_no_tasks)
+
+            self.tasks.append(self.folder_no_tasks)
 
     # UI
     class ClickedLabel(QLabel):
@@ -280,192 +398,59 @@ class MainWindow_Init(object):
         self.main_mainArea_tasks_1 = QtWidgets.QGroupBox(self.main_mainArea_contents)
         self.main_mainArea_tasks_1.setObjectName("main_mainArea_tasks_1")
         self.main_mainArea_tasks_1_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_1)
-        self.main_mainArea_tasks_1_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_mainArea_tasks_1_layout.setContentsMargins(0, 5, 0, 0)
         self.main_mainArea_tasks_1_layout.setObjectName("main_mainArea_tasks_1_layout")
 
-        # - Task
-        self.task_1_1 = QtWidgets.QFormLayout()
-        self.task_1_1.setContentsMargins(-1, 10, -1, -1)
-        self.task_1_1.setObjectName("task_1_1")
-        self.task_btn_1_1 = QtWidgets.QToolButton(self.main_mainArea_tasks_1)
-        self.task_btn_1_1.setMaximumSize(QtCore.QSize(18, 18))
-        self.task_btn_1_1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.task_btn_1_1.setStyleSheet("border: 1px solid #FFFFFF;\n"
-                                        "border-radius: 5px;")
-        self.task_btn_1_1.setObjectName("task_btn_1_1")
-        self.task_description_1_1 = QtWidgets.QLabel(self.main_mainArea_tasks_1)
-        self.task_description_1_1.setStyleSheet("font-family: \'Inter\';\n"
-                                                "font-style: normal;\n"
-                                                "font-weight: 400;\n"
-                                                "font-size: 16px;\n"
-                                                "line-height: 16px;\n"
-                                                "/* identical to box height, or 100% */\n"
-                                                "\n"
-                                                "letter-spacing: -0.055em;\n"
-                                                "\n"
-                                                "color: #FFFFFF;")
-        self.task_description_1_1.setWordWrap(False)
-        self.task_description_1_1.setObjectName("task_description_1_1")
-        self.task_1_1.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn_1_1)
-        self.task_1_1.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description_1_1)
-        self.main_mainArea_tasks_1_layout.addLayout(self.task_1_1)
-        # - end Task
-
-        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_1, 1, 0, 1, 1)
         # 2
         self.main_mainArea_tasks_2 = QtWidgets.QGroupBox(self.main_mainArea_contents)
         self.main_mainArea_tasks_2.setObjectName("main_mainArea_tasks_2")
         self.main_mainArea_tasks_2_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_2)
-        self.main_mainArea_tasks_2_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_mainArea_tasks_2_layout.setContentsMargins(0, 5, 0, 0)
         self.main_mainArea_tasks_2_layout.setObjectName("main_mainArea_tasks_2_layout")
 
-        # - Task
-        self.task_2_1 = QtWidgets.QFormLayout()
-        self.task_2_1.setContentsMargins(-1, 10, -1, -1)
-        self.task_2_1.setObjectName("task_2_1")
-        self.main_mainArea_tasks_2_layout.addLayout(self.task_2_1)
-        # - end Task
-
-        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_2, 1, 1, 1, 1)
         # 3
         self.main_mainArea_tasks_3 = QtWidgets.QGroupBox(self.main_mainArea_contents)
         self.main_mainArea_tasks_3.setObjectName("main_mainArea_tasks_3")
         self.main_mainArea_tasks_3_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_3)
-        self.main_mainArea_tasks_3_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_mainArea_tasks_3_layout.setContentsMargins(0, 5, 0, 0)
         self.main_mainArea_tasks_3_layout.setObjectName("main_mainArea_tasks_3_layout")
 
-        # - Task
-        self.formLayout_2 = QtWidgets.QFormLayout()
-        self.formLayout_2.setContentsMargins(-1, 10, -1, -1)
-        self.formLayout_2.setObjectName("formLayout_2")
-        self.label = QtWidgets.QLabel(self.main_mainArea_tasks_3)
-        self.label.setStyleSheet("font-family: \'Inter\';\n"
-                                 "font-style: normal;\n"
-                                 "font-weight: 400;\n"
-                                 "font-size: 16px;\n"
-                                 "line-height: 16px;\n"
-                                 "/* identical to box height, or 100% */\n"
-                                 "\n"
-                                 "letter-spacing: -0.055em;\n"
-                                 "\n"
-                                 "color: #A3A3A3;")
-        self.label.setObjectName("label")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
-        self.main_mainArea_tasks_3_layout.addLayout(self.formLayout_2)
-        # - end Task
-
-        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_3, 4, 0, 1, 1)
         # 4
         self.main_mainArea_tasks_4 = QtWidgets.QGroupBox(self.main_mainArea_contents)
         self.main_mainArea_tasks_4.setObjectName("main_mainArea_tasks_4")
         self.main_mainArea_tasks_4_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_4)
-        self.main_mainArea_tasks_4_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_mainArea_tasks_4_layout.setContentsMargins(0, 5, 0, 0)
         self.main_mainArea_tasks_4_layout.setObjectName("main_mainArea_tasks_4_layout")
 
-        # - Task
-        self.formLayout_3 = QtWidgets.QFormLayout()
-        self.formLayout_3.setContentsMargins(-1, 10, -1, -1)
-        self.formLayout_3.setObjectName("formLayout_3")
-        self.label_2 = QtWidgets.QLabel(self.main_mainArea_tasks_4)
-        self.label_2.setStyleSheet("font-family: \'Inter\';\n"
-                                   "font-style: normal;\n"
-                                   "font-weight: 400;\n"
-                                   "font-size: 16px;\n"
-                                   "line-height: 16px;\n"
-                                   "/* identical to box height, or 100% */\n"
-                                   "\n"
-                                   "letter-spacing: -0.055em;\n"
-                                   "\n"
-                                   "color: #A3A3A3;")
-        self.label_2.setObjectName("label_2")
-        self.formLayout_3.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_2)
-        self.main_mainArea_tasks_4_layout.addLayout(self.formLayout_3)
-        # - end Task
-
-        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_4, 4, 1, 1, 1)
         # 5
         self.main_mainArea_tasks_5 = QtWidgets.QGroupBox(self.main_mainArea_contents)
         self.main_mainArea_tasks_5.setObjectName("main_mainArea_tasks_5")
         self.main_mainArea_tasks_5_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_5)
-        self.main_mainArea_tasks_5_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_mainArea_tasks_5_layout.setContentsMargins(0, 5, 0, 0)
         self.main_mainArea_tasks_5_layout.setObjectName("main_mainArea_tasks_5_layout")
 
-        # - Task
-        self.formLayout_4 = QtWidgets.QFormLayout()
-        self.formLayout_4.setContentsMargins(-1, 10, -1, -1)
-        self.formLayout_4.setObjectName("formLayout_4")
-        self.label_3 = QtWidgets.QLabel(self.main_mainArea_tasks_5)
-        self.label_3.setStyleSheet("font-family: \'Inter\';\n"
-                                   "font-style: normal;\n"
-                                   "font-weight: 400;\n"
-                                   "font-size: 16px;\n"
-                                   "line-height: 16px;\n"
-                                   "/* identical to box height, or 100% */\n"
-                                   "\n"
-                                   "letter-spacing: -0.055em;\n"
-                                   "\n"
-                                   "color: #A3A3A3;")
-        self.label_3.setObjectName("label_3")
-        self.formLayout_4.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_3)
-        self.main_mainArea_tasks_5_layout.addLayout(self.formLayout_4)
-        # - end Task
-
-        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_5, 6, 0, 1, 1)
         # 6
         self.main_mainArea_tasks_6 = QtWidgets.QGroupBox(self.main_mainArea_contents)
         self.main_mainArea_tasks_6.setObjectName("main_mainArea_tasks_6")
         self.main_mainArea_tasks_6_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_6)
-        self.main_mainArea_tasks_6_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_mainArea_tasks_6_layout.setContentsMargins(0, 5, 0, 0)
         self.main_mainArea_tasks_6_layout.setObjectName("main_mainArea_tasks_6_layout")
 
-        # - Task
-        self.formLayout_5 = QtWidgets.QFormLayout()
-        self.formLayout_5.setContentsMargins(-1, 10, -1, -1)
-        self.formLayout_5.setObjectName("formLayout_5")
-        self.label_4 = QtWidgets.QLabel(self.main_mainArea_tasks_6)
-        self.label_4.setStyleSheet("font-family: \'Inter\';\n"
-                                   "font-style: normal;\n"
-                                   "font-weight: 400;\n"
-                                   "font-size: 16px;\n"
-                                   "line-height: 16px;\n"
-                                   "/* identical to box height, or 100% */\n"
-                                   "\n"
-                                   "letter-spacing: -0.055em;\n"
-                                   "\n"
-                                   "color: #A3A3A3;")
-        self.label_4.setObjectName("label_4")
-        self.formLayout_5.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_4)
-        self.main_mainArea_tasks_6_layout.addLayout(self.formLayout_5)
-        # - end Task
-
-        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_6, 6, 1, 1, 1)
         # 7
         self.main_mainArea_tasks_7 = QtWidgets.QGroupBox(self.main_mainArea_contents)
         self.main_mainArea_tasks_7.setObjectName("main_mainArea_tasks_7")
-        self.main_mainArea_tasks_8_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_7)
-        self.main_mainArea_tasks_8_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_mainArea_tasks_8_layout.setObjectName("main_mainArea_tasks_8_layout")
+        self.main_mainArea_tasks_7_layout = QtWidgets.QVBoxLayout(self.main_mainArea_tasks_7)
+        self.main_mainArea_tasks_7_layout.setContentsMargins(0, 5, 0, 0)
+        self.main_mainArea_tasks_7_layout.setObjectName("main_mainArea_tasks_7_layout")
 
-        # - Task
-        self.formLayout_6 = QtWidgets.QFormLayout()
-        self.formLayout_6.setContentsMargins(-1, 10, -1, -1)
-        self.formLayout_6.setObjectName("formLayout_6")
-        self.label_5 = QtWidgets.QLabel(self.main_mainArea_tasks_7)
-        self.label_5.setStyleSheet("font-family: \'Inter\';\n"
-                                   "font-style: normal;\n"
-                                   "font-weight: 400;\n"
-                                   "font-size: 16px;\n"
-                                   "line-height: 16px;\n"
-                                   "/* identical to box height, or 100% */\n"
-                                   "\n"
-                                   "letter-spacing: -0.055em;\n"
-                                   "\n"
-                                   "color: #A3A3A3;")
-        self.label_5.setObjectName("label_5")
-        self.formLayout_6.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_5)
-        self.main_mainArea_tasks_8_layout.addLayout(self.formLayout_6)
-        # - end Task
+        self.main_page_tasks()
 
+        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_1, 1, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_2, 1, 1, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_3, 4, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_4, 4, 1, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_5, 6, 0, 1, 1)
+        self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_6, 6, 1, 1, 1)
         self.main_mainArea_grid.addWidget(self.main_mainArea_tasks_7, 8, 0, 1, 1)
         # end Настройка main_mainArea
 
@@ -520,54 +505,19 @@ class MainWindow_Init(object):
         # - end Titles
 
         # - groups
-        self.main_mainArea_tasks_1 = QtWidgets.QGroupBox(self.main_secondArea_contents)
-        self.main_mainArea_tasks_1.setObjectName("main_secondArea_group_2")
-        self.main_secondArea_grid.addWidget(self.main_mainArea_tasks_1, 1, 0, 1, 1)
+        self.main_secondArea_tasks_1 = QtWidgets.QGroupBox(self.main_secondArea_contents)
+        self.main_secondArea_tasks_1.setObjectName("main_secondArea_group_2")
+        self.main_secondArea_grid.addWidget(self.main_secondArea_tasks_1, 1, 0, 1, 1)
 
         self.main_secondArea_group_2 = QtWidgets.QGroupBox(self.main_secondArea_contents)
         self.main_secondArea_group_2.setObjectName("main_mainArea_tasks_1")
         self.main_secondArea_grid.addWidget(self.main_secondArea_group_2, 3, 0, 1, 1)
         # - end groups
 
-        self.main_mainArea_tasks_1_layout = QtWidgets.QGridLayout(self.main_mainArea_tasks_1)
-        self.main_mainArea_tasks_1_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-        self.main_mainArea_tasks_1_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_mainArea_tasks_1_layout.setObjectName("main_mainArea_tasks_1_layout")
-
-        # Task
-        self.task_2_2 = QtWidgets.QFormLayout()
-        self.task_2_2.setContentsMargins(-1, 10, -1, -1)
-        self.task_2_2.setObjectName("task_2_2")
-        self.task_btn_2_2 = QtWidgets.QToolButton(self.main_mainArea_tasks_1)
-        self.task_btn_2_2.setMaximumSize(QtCore.QSize(18, 18))
-        self.task_btn_2_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.task_btn_2_2.setStyleSheet("background: #1490AA;\n"
-                                        "border-radius: 5px;")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/src/img/task_done.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.task_btn_2_2.setIcon(icon1)
-        self.task_btn_2_2.setObjectName("task_btn_2_2")
-        self.task_description_2_2 = QtWidgets.QLabel(self.main_mainArea_tasks_1)
-        self.task_description_2_2.setStyleSheet("font-family: \'Inter\';\n"
-                                                "font-style: normal;\n"
-                                                "font-weight: 400;\n"
-                                                "font-size: 16px;\n"
-                                                "line-height: 16px;\n"
-                                                "/* identical to box height, or 100% */\n"
-                                                "\n"
-                                                "letter-spacing: -0.055em;\n"
-                                                "\n"
-                                                "color: #FFFFFF;")
-        self.task_description_2_2.setTextFormat(QtCore.Qt.AutoText)
-        self.task_description_2_2.setScaledContents(False)
-        self.task_description_2_2.setWordWrap(True)
-        self.task_description_2_2.setObjectName("task_description_2_2")
-        self.task_2_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn_2_2)
-        self.task_2_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description_2_2)
-        self.main_mainArea_tasks_1_layout.addLayout(self.task_2_2, 0, 0, 1, 1)
-        self.main_mainArea_tasks_1_layout.setColumnStretch(0, 1)
-        # end task
-        # end Настройка main_secondArea
+        self.main_secondArea_tasks_1_layout = QtWidgets.QGridLayout(self.main_secondArea_tasks_1)
+        self.main_secondArea_tasks_1_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.main_secondArea_tasks_1_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_secondArea_tasks_1_layout.setObjectName("main_mainArea_tasks_1_layout")
 
         self.main_mainArea.setWidget(self.main_mainArea_contents)
         self.main_secondArea.setWidget(self.main_secondArea_contents)
@@ -613,16 +563,64 @@ class MainWindow_Init(object):
         self.main.addWidget(self.folder_page)
 
     # Tasks loading
-    def main_page_tasks(self):
+    def main_page_tasks(self, reload=False):
         self.reload_tasks()
 
-        self.folder_click(self.btn_menu_main, self.active_button)
-        self.active_button.setEnabled(True)
-        self.active_button = self.btn_menu_main
-        self.active_button.setEnabled(False)
-        self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        if not reload:
+            self.folder_click(self.btn_menu_main, self.active_button)
+            self.active_button.setEnabled(True)
+            self.active_button = self.btn_menu_main
+            self.active_button.setEnabled(False)
+            self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
-        tasks = self.cur.execute('''SELECT * FROM tasks''')
+        # 1
+        date = self.date.strftime('%d.%m')
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+        print(date, tasks)
+
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_1, self.main_mainArea_tasks_1_layout)
+
+        # 2
+        date = (self.date + dt.timedelta(days=1)).strftime('%d.%m')
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+
+        print(date, tasks)
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_2, self.main_mainArea_tasks_2_layout)
+
+        # 3
+        date = (self.date + dt.timedelta(days=2)).strftime('%d.%m')
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+
+        print(date, tasks)
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_3, self.main_mainArea_tasks_3_layout)
+
+        # 4
+        date = (self.date + dt.timedelta(days=3)).strftime('%d.%m')
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+
+        print(date, tasks)
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_4, self.main_mainArea_tasks_4_layout)
+
+        # 5
+        date = (self.date + dt.timedelta(days=4)).strftime('%d.%m')
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+
+        print(date, tasks)
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_5, self.main_mainArea_tasks_5_layout)
+
+        # 6
+        date = (self.date + dt.timedelta(days=5)).strftime('%d.%m')
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+
+        print(date, tasks)
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_6, self.main_mainArea_tasks_6_layout)
+
+        # 7
+        date = (self.date + dt.timedelta(days=6)).strftime('%d.%m')
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+
+        print(date, tasks)
+        self.load_tasks(tasks, True, self.main_mainArea_tasks_7, self.main_mainArea_tasks_7_layout)
 
         self.main.setCurrentIndex(0)
 
@@ -641,102 +639,10 @@ class MainWindow_Init(object):
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE folder_id = ?''',
                                  [self.active_button.folder_id]).fetchall()
 
-        self.folder_title.setText(folder[0])
+        if folder:
+            self.folder_title.setText(folder[0])
 
-        if tasks:
-            for index, task in enumerate(tasks):
-                self.task = QtWidgets.QGroupBox(self.folder_area_contents)
-                sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-                sizePolicy.setHeightForWidth(self.task.sizePolicy().hasHeightForWidth())
-                self.task.setSizePolicy(sizePolicy)
-                self.task.setObjectName(f"task_{index}")
-
-                self.task_layout = QtWidgets.QFormLayout(self.task)
-                self.task_layout.setContentsMargins(0, 0, 0, 0)
-                self.task_layout.setObjectName(f"task_layout_{index}")
-
-                self.task_btn = QtWidgets.QToolButton(self.task)
-                self.task_btn.setMaximumSize(QtCore.QSize(18, 18))
-                self.task_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-
-                if not task[4]:
-                    self.task_btn.setStyleSheet("border: 1.25px solid #FFFFFF;\n"
-                                                "border-radius: 5px;")
-                    self.task_btn.status = False
-                else:
-                    self.task_btn.setStyleSheet("background: #1490AA;\n"
-                                                "border-radius: 5px;")
-                    task_btn_icon = QtGui.QIcon()
-                    task_btn_icon.addPixmap(QtGui.QPixmap(":/src/img/task_done.svg"), QtGui.QIcon.Normal,
-                                            QtGui.QIcon.Off)
-                    self.task_btn.setIcon(task_btn_icon)
-                    self.task_btn.status = True
-
-                self.task_btn.setObjectName(f"task_btn_{index}")
-                self.task_btn.id = task[0]
-                self.task_btn.clicked.connect(self.task_action)
-
-                self.task_description = QtWidgets.QLabel(self.task)
-                self.task_description.setStyleSheet("font-family: \'Inter\';\n"
-                                                    "font-style: normal;\n"
-                                                    "font-weight: 400;\n"
-                                                    "font-size: 16px;\n"
-                                                    "line-height: 16px;\n"
-                                                    "/* identical to box height, or 100% */\n"
-                                                    "\n"
-                                                    "letter-spacing: -0.055em;\n"
-                                                    "\n"
-                                                    "color: #FFFFFF;")
-                self.task_description.setWordWrap(False)
-                if task[4]:
-                    font = self.task_description.font()
-                    font.setStrikeOut(True)
-                    self.task_description.setFont(font)
-                self.task_description.setObjectName(f"task_description_{index}")
-                self.task_description.setText(self._translate("MainWindow", f'{task[3]}  {task[2]}'
-                                                              if task[2] else task[3]))
-
-                self.task_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.task_btn)
-                self.task_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.task_description)
-
-                self.folder_area_layout.addWidget(self.task)
-
-                self.tasks.append(self.task)
-
-            self.folder_space = QtWidgets.QLabel()
-            self.folder_space.setObjectName("folder_space")
-            self.tasks.append(self.folder_space)
-
-            self.folder_area_layout.addWidget(self.folder_space)
-        else:
-            self.folder_no_tasks = QtWidgets.QGroupBox(self.folder_area_contents)
-            self.folder_no_tasks.setObjectName("folder_no_tasks")
-
-            self.folder_no_tasks_layout = QtWidgets.QFormLayout(self.folder_no_tasks)
-            self.folder_no_tasks_layout.setContentsMargins(0, 0, 0, 0)
-            self.folder_no_tasks_layout.setObjectName("folder_no_tasks_layout")
-
-            self.folder_no_tasks_description = QtWidgets.QLabel(self.folder_area_contents)
-            self.folder_no_tasks_description.setStyleSheet("font-family: \'Inter\';\n"
-                                                           "font-style: normal;\n"
-                                                           "font-weight: 400;\n"
-                                                           "font-size: 16px;\n"
-                                                           "line-height: 16px;\n"
-                                                           "/* identical to box height, or 100% */\n"
-                                                           "\n"
-                                                           "letter-spacing: -0.055em;\n"
-                                                           "\n"
-                                                           "color: #A3A3A3;")
-            self.folder_no_tasks_description.setObjectName("folder_no_tasks_description")
-            self.folder_no_tasks_description.setText(self._translate("MainWindow", "Задач нет"))
-
-            self.folder_no_tasks_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole,
-                                                  self.folder_no_tasks_description)
-
-            self.folder_no_tasks.setLayout(self.folder_no_tasks_layout)
-            self.folder_area_layout.addWidget(self.folder_no_tasks)
-
-            self.tasks.append(self.folder_no_tasks)
+        self.load_tasks(tasks, False, self.folder_area_contents, self.folder_area_layout)
 
         self.main.setCurrentIndex(1)
 
@@ -806,14 +712,6 @@ class MainWindow_Init(object):
         self.main_mainArea_title_3.setText(self._translate("MainWindow", "Послезавтра"))
         self.main_secondArea_title_1.setText(self._translate("MainWindow", "Просроченные"))
         self.main_secondArea_title_2.setText(self._translate("MainWindow", "Предстоящие"))
-        # TODO(Переделать)
-        self.label_5.setText(self._translate("MainWindow", "Задач нет"))
-        self.task_description_1_1.setText(self._translate("MainWindow", "Простое задание"))
-        self.label_3.setText(self._translate("MainWindow", "Задач нет"))
-        self.label.setText(self._translate("MainWindow", "Задач нет"))
-        self.label_2.setText(self._translate("MainWindow", "Задач нет"))
-        self.label_4.setText(self._translate("MainWindow", "Задач нет"))
-        self.task_description_2_2.setText(self._translate("MainWindow", "Простое задание"))
 
 
 class MainWindow(QMainWindow, MainWindow_Init):
