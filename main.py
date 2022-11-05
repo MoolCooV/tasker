@@ -17,61 +17,77 @@ if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
 if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
-STYLES = {'main_title': ("font-family: \'Inter\';\n"
-                         "font-style: normal;\n"
-                         "font-weight: 700;\n"
-                         "font-size: 27px;\n"
-                         "line-height: 29px;\n"
-                         "letter-spacing: -0.055em;\n"
-                         "color: #FFFFFF;"),
-          'second_title': ("font-family: \'Inter\';\n"
-                           "font-style: normal;\n"
-                           "font-weight: 700;\n"
-                           "font-size: 24px;\n"
-                           "line-height: 29px;\n"
-                           "letter-spacing: -0.055em;\n"
-                           "color: #FFFFFF;"),
-          'btn_active': ("background: #1490AA;\n"
-                         "border-radius: 11px;\n"
-                         "font-family: \'Inter\';\n"
+STYLES = {
+    'main_title': ("font-family: \'Inter\';\n"
+                   "font-style: normal;\n"
+                   "font-weight: 700;\n"
+                   "font-size: 27px;\n"
+                   "line-height: 29px;\n"
+                   "letter-spacing: -0.055em;\n"
+                   "color: #FFFFFF;"),
+    'second_title': ("font-family: \'Inter\';\n"
+                     "font-style: normal;\n"
+                     "font-weight: 700;\n"
+                     "font-size: 24px;\n"
+                     "line-height: 29px;\n"
+                     "letter-spacing: -0.055em;\n"
+                     "color: #FFFFFF;"),
+    'btn_active': ("background: #1490AA;\n"
+                   "border-radius: 11px;\n"
+                   "font-family: \'Inter\';\n"
+                   "font-style: normal;\n"
+                   "font-weight: 400;\n"
+                   "font-size: 16px;\n"
+                   "line-height: 19px;\n"
+                   "text-align: left;\n"
+                   "color: #FFFFFF;\n"
+                   "padding: 8px 0 8px 15px;"),
+    'btn_inactive': ("background: #282828;\n"
+                     "border-radius: 11px;\n"
+                     "font-family: \'Inter\';\n"
+                     "font-style: normal;\n"
+                     "font-weight: 400;\n"
+                     "font-size: 16px;\n"
+                     "line-height: 19px;\n"
+                     "text-align: left;\n"
+                     "color: #FFFFFF;\n"
+                     "padding: 8px 0 8px 15px;"),
+    'task_btn_active': ("background: #1490AA;\n"
+                        "border-radius: 5px;"),
+    'task_btn_inactive': ("border: 1.25px solid #FFFFFF;\n"
+                          "border-radius: 5px;"),
+    'task_description': ("font-family: \'Inter\';\n"
                          "font-style: normal;\n"
                          "font-weight: 400;\n"
                          "font-size: 16px;\n"
-                         "line-height: 19px;\n"
-                         "text-align: left;\n"
-                         "color: #FFFFFF;\n"
-                         "padding: 8px 0 8px 15px;"),
-          'btn_inactive': ("background: #282828;\n"
-                           "border-radius: 11px;\n"
-                           "font-family: \'Inter\';\n"
-                           "font-style: normal;\n"
-                           "font-weight: 400;\n"
-                           "font-size: 16px;\n"
-                           "line-height: 19px;\n"
-                           "text-align: left;\n"
-                           "color: #FFFFFF;\n"
-                           "padding: 8px 0 8px 15px;"),
-          'task_btn_active': ("background: #1490AA;\n"
-                              "border-radius: 5px;"),
-          'task_btn_inactive': ("border: 1.25px solid #FFFFFF;\n"
-                                "border-radius: 5px;"),
-          'task_description': ("font-family: \'Inter\';\n"
-                               "font-style: normal;\n"
-                               "font-weight: 400;\n"
-                               "font-size: 16px;\n"
-                               "line-height: 16px;\n"
-                               "letter-spacing: -0.055em;\n"
-                               "color: #FFFFFF;"),
-          'no_tasks': ("font-family: \'Inter\';\n"
-                       "font-style: normal;\n"
-                       "font-weight: 400;\n"
-                       "font-size: 16px;\n"
-                       "line-height: 16px;\n"
-                       "/* identical to box height, or 100% */\n"
-                       "\n"
-                       "letter-spacing: -0.055em;\n"
-                       "\n"
-                       "color: #A3A3A3;")}
+                         "line-height: 16px;\n"
+                         "letter-spacing: -0.055em;\n"
+                         "color: #FFFFFF;"),
+    'no_tasks': ("font-family: \'Inter\';\n"
+                 "font-style: normal;\n"
+                 "font-weight: 400;\n"
+                 "font-size: 16px;\n"
+                 "line-height: 16px;\n"
+                 "/* identical to box height, or 100% */\n"
+                 "\n"
+                 "letter-spacing: -0.055em;\n"
+                 "\n"
+                 "color: #A3A3A3;")
+}
+MONTHS = {
+    'Январь': 'Января',
+    'Февраль': 'Февраля',
+    'Март': 'Марта',
+    'Апрель': 'Апреля',
+    'Май': 'Мая',
+    'Июнь': 'Июня',
+    'Июль': 'Июля',
+    'Август': 'Августа',
+    'Сентябрь': 'Сентября',
+    'Октябрь': 'Октября',
+    'Ноябрь': 'Ноября',
+    'Декабрь': 'Декабря',
+}
 
 
 class MainWindow_Init(object):
@@ -110,9 +126,9 @@ class MainWindow_Init(object):
         self.db.commit()
 
         if self.sender().page == 'main':
-            self.main_page_tasks(True)
+            self.main_page_load(True)
         elif self.sender().page == 'folder':
-            self.folder_page_tasks(True)
+            self.folder_page_load(True)
 
     def add_task(self):
         pass
@@ -122,11 +138,11 @@ class MainWindow_Init(object):
         self.db.commit()
 
         if self.sender().page == 'main':
-            self.main_page_tasks(True)
+            self.main_page_load(True)
         elif self.sender().page == 'folder':
-            self.folder_page_tasks(True)
+            self.folder_page_load(True)
 
-    def reload_tasks(self):
+    def unload_tasks(self):
         for task in self.tasks:
             task.deleteLater()
         self.tasks.clear()
@@ -180,7 +196,7 @@ class MainWindow_Init(object):
 
                 task_description.setObjectName(f"task_description_{index}")
                 task_description.setText(self._translate("MainWindow", f'{task_info[3]}  {task_info[2]}'
-                                         if (task_info[2] and not isMainPage) else task_info[3]))
+                if (task_info[2] and not isMainPage) else task_info[3]))
 
                 if isMainPage:
                     task_btn.page = task_description.page = 'main'
@@ -240,7 +256,7 @@ class MainWindow_Init(object):
         self.btn_menu_main.setObjectName("btn_menu_main")
         self.btn_menu_main.folder_id = -1
         self.active_button = self.btn_menu_main
-        self.btn_menu_main.clicked.connect(self.main_page_tasks)
+        self.btn_menu_main.clicked.connect(self.main_page_load)
 
         for index, folder in enumerate(folders):
             button = QtWidgets.QPushButton(self.buttons)
@@ -251,7 +267,7 @@ class MainWindow_Init(object):
             button.setObjectName(f"btn-menu_{index}")
             button.setText(self._translate("MainWindow", folder[1]))
             button.folder_id = folder[0]
-            button.clicked.connect(self.folder_page_tasks)
+            button.clicked.connect(self.folder_page_load)
 
     def main_page_setup(self):
         """Настройка главной вкладки"""
@@ -445,7 +461,7 @@ class MainWindow_Init(object):
         self.main_secondArea_layout.addWidget(self.main_secondArea_tasks_1, 1, 0, 1, 1)
         self.main_secondArea_layout.addWidget(self.main_secondArea_tasks_2, 3, 0, 1, 1)
 
-        self.main_page_tasks()
+        self.main_page_load()
 
         self.main_mainArea.setWidget(self.main_mainArea_contents)
         self.main_secondArea.setWidget(self.main_secondArea_contents)
@@ -482,9 +498,7 @@ class MainWindow_Init(object):
         self.main.addWidget(self.folder_page)
 
     # Tasks loading
-    def main_page_tasks(self, reload=False):
-        self.reload_tasks()
-
+    def main_page_load(self, reload=False):
         if not reload:
             self.folder_click(self.btn_menu_main, self.active_button)
             self.active_button.setEnabled(True)
@@ -492,39 +506,61 @@ class MainWindow_Init(object):
             self.active_button.setEnabled(False)
             self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
+        # Titles
+        date = self.date + dt.timedelta(days=3)
+        self.main_mainArea_title_4.setText(self._translate("MainWindow", f"{date.strftime('%A').capitalize()}, "
+                                                                         f"{int(date.strftime('%d'))} "
+                                                                         f"{MONTHS[date.strftime('%B')]}"))
+
+        date = self.date + dt.timedelta(days=4)
+        self.main_mainArea_title_5.setText(self._translate("MainWindow", f"{date.strftime('%A').capitalize()}, "
+                                                                         f"{int(date.strftime('%d'))} "
+                                                                         f"{MONTHS[date.strftime('%B')]}"))
+
+        date = self.date + dt.timedelta(days=5)
+        self.main_mainArea_title_6.setText(self._translate("MainWindow", f"{date.strftime('%A').capitalize()}, "
+                                                                         f"{int(date.strftime('%d'))} "
+                                                                         f"{MONTHS[date.strftime('%B')]}"))
+
+        date = self.date + dt.timedelta(days=6)
+        self.main_mainArea_title_7.setText(self._translate("MainWindow", f"{date.strftime('%A').capitalize()}, "
+                                                                         f"{int(date.strftime('%d'))} "
+                                                                         f"{MONTHS[date.strftime('%B')]}"))
+
+        # Tasks
+        self.unload_tasks()
         # MainArea
         # 1
-        date = self.date.strftime('%d.%m')
-        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
+        tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (self.date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_1, self.main_mainArea_tasks_1_layout)
 
         # 2
-        date = (self.date + dt.timedelta(days=1)).strftime('%d.%m')
+        date = (self.date + dt.timedelta(days=1))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_2, self.main_mainArea_tasks_2_layout)
 
         # 3
-        date = (self.date + dt.timedelta(days=2)).strftime('%d.%m')
+        date = (self.date + dt.timedelta(days=2))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_3, self.main_mainArea_tasks_3_layout)
 
         # 4
-        date = (self.date + dt.timedelta(days=3)).strftime('%d.%m')
+        date = (self.date + dt.timedelta(days=3))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_4, self.main_mainArea_tasks_4_layout)
 
         # 5
-        date = (self.date + dt.timedelta(days=4)).strftime('%d.%m')
+        date = (self.date + dt.timedelta(days=4))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_5, self.main_mainArea_tasks_5_layout)
 
         # 6
-        date = (self.date + dt.timedelta(days=5)).strftime('%d.%m')
+        date = (self.date + dt.timedelta(days=5))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_6, self.main_mainArea_tasks_6_layout)
 
         # 7
-        date = (self.date + dt.timedelta(days=6)).strftime('%d.%m')
+        date = (self.date + dt.timedelta(days=6))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_7, self.main_mainArea_tasks_7_layout)
         # 8
@@ -542,9 +578,7 @@ class MainWindow_Init(object):
 
         self.main.setCurrentIndex(0)
 
-    def folder_page_tasks(self, reload=False):
-        self.reload_tasks()
-
+    def folder_page_load(self, reload=False):
         if not reload:
             self.folder_click(self.sender(), self.active_button)
             self.active_button.setEnabled(True)
@@ -560,6 +594,7 @@ class MainWindow_Init(object):
         if folder:
             self.folder_title.setText(folder[0])
 
+        self.unload_tasks()
         self.load_tasks(tasks, False, self.folder_area_contents, self.folder_area_layout)
 
         self.main.setCurrentIndex(1)
