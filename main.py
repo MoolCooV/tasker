@@ -497,6 +497,95 @@ class MainWindow_Init(object):
 
         self.main.addWidget(self.folder_page)
 
+    def dialog_menu_setup(self):
+        self.dialog_container = QtWidgets.QGroupBox(self.centralwidget)
+        self.dialog_container.resize(QtCore.QSize(1246, 698))
+        self.dialog_container.setObjectName("dialog_container")
+        self.dialog_container.setStyleSheet("background: rgba(0, 0, 0, 0.5);")
+        self.dialog_container_layout = QtWidgets.QVBoxLayout(self.dialog_container)
+        self.dialog_container_layout.setContentsMargins(0, 5, 0, 0)
+        self.dialog_container_layout.setObjectName("dialog_container_layout")
+
+        self.dialog = QtWidgets.QGroupBox(self.dialog_container)
+        self.dialog.setObjectName("dialog")
+        self.dialog.resize(QtCore.QSize(440, 183))
+        self.dialog.setStyleSheet("background: #151515;")
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(self.dialog)
+        self.buttonBox.setGeometry(QtCore.QRect(0, 125, 440, 37))
+        self.buttonBox.setStyleSheet("background: #282828;\n"
+                                     "border-radius: 11px;\n"
+                                     "width: 108px;\n"
+                                     "height: 37px;\n"
+                                     "\n"
+                                     "font-family: \'Inter\';\n"
+                                     "font-style: normal;\n"
+                                     "font-weight: 400;\n"
+                                     "font-size: 16px;\n"
+                                     "line-height: 19px;\n"
+                                     "/* identical to box height, or 121% */\n"
+                                     "\n"
+                                     "text-align: center;\n"
+                                     "\n"
+                                     "color: #FFFFFF;")
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Save)
+        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setObjectName("buttonBox")
+        self.label = QtWidgets.QLabel(self.dialog)
+        self.label.setGeometry(QtCore.QRect(25, 25, 391, 29))
+        self.label.setStyleSheet("font-family: \'Inter\';\n"
+                                 "font-style: normal;\n"
+                                 "font-weight: 700;\n"
+                                 "font-size: 24px;\n"
+                                 "line-height: 29px;\n"
+                                 "/* identical to box height */\n"
+                                 "\n"
+                                 "\n"
+                                 "color: #FFFFFF;")
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.dialog)
+        self.label_2.setGeometry(QtCore.QRect(25, 75, 81, 20))
+        self.label_2.setStyleSheet("font-family: \'Inter\';\n"
+                                   "font-style: normal;\n"
+                                   "font-weight: 400;\n"
+                                   "font-size: 16px;\n"
+                                   "line-height: 19px;\n"
+                                   "/* identical to box height, or 121% */\n"
+                                   "\n"
+                                   "\n"
+                                   "color: #FFFFFF;")
+        self.label_2.setObjectName("label_2")
+        self.lineEdit = QtWidgets.QLineEdit(self.dialog)
+        self.lineEdit.setGeometry(QtCore.QRect(120, 71, 295, 29))
+        self.lineEdit.setStyleSheet("background: #282828;\n"
+                                    "border-radius: 7px;\n"
+                                    "font-family: \'Inter\';\n"
+                                    "font-style: normal;\n"
+                                    "font-weight: 300;\n"
+                                    "font-size: 15px;\n"
+                                    "line-height: 19px;\n"
+                                    "/* identical to box height, or 129% */\n"
+                                    "padding: 4px 10px;\n"
+                                    "\n"
+                                    "color: #FFFFFF;")
+        self.lineEdit.setObjectName("lineEdit")
+
+        self.dialog_container.raise_()
+        self.dialog.raise_()
+        self.label.raise_()
+        self.label_2.raise_()
+        self.lineEdit.raise_()
+        self.buttonBox.raise_()
+
+        self.dialog_container.show()
+        self.dialog.show()
+        self.label.show()
+        self.label_2.show()
+        self.lineEdit.show()
+        self.buttonBox.show()
+
+
     # Tasks loading
     def main_page_load(self, reload=False):
         if not reload:
@@ -633,7 +722,7 @@ class MainWindow_Init(object):
         self.btn_add_folder.setPixmap(QtGui.QPixmap(":/src/img/add_folder.svg"))
         self.btn_add_folder.setObjectName("btn_add_folder")
         self.btn_add_folder.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.btn_add_folder.clicked.connect(self.add_folder)
+        self.btn_add_folder.clicked.connect(self.dialog_menu_setup)
         # - Buttons
         self.buttons = QtWidgets.QGroupBox(self.header)
         self.buttons.setGeometry(QtCore.QRect(23, 93, 219, 583))
