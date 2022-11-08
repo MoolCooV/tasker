@@ -72,7 +72,6 @@ STYLES = {
                  "letter-spacing: -0.055em;\n"
                  "\n"
                  "color: #A3A3A3;"),
-
     'dialog_label': ("font-family: \'Inter\';\n"
                      "font-style: normal;\n"
                      "font-weight: 400;\n"
@@ -88,62 +87,14 @@ STYLES = {
                      "line-height: 19px;\n"
                      "padding: 4px 10px;\n"
                      "color: #FFFFFF;"),
-    'dialog_date': ("""
-        QDateEdit {
-            background: #282828;
-            border-radius: 11px;
-            padding-left: 5px;
-            
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 300;
-            font-size: 15px;
-            line-height: 19px;
-            text-align: center;
-            color: #FFFFFF;
-        }
-            
-        QDateEdit:disabled {
-            background: #282828;
-            border-radius: 11px;
-            
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 300;
-            font-size: 15px;
-            line-height: 19px;
-            text-align: center;
-            color: #A3A3A3;
-        }
-        
-        QDateEdit::up-button {
-            width: 16px;
-            height: 13px;
-            border-radius: 0px 11px 0px 0px;
-        }
-            
-        QDateEdit::up-button:pressed {
-            background: #191919;
-        }
-            
-        QDateEdit::up-arrow {
-            image: url(./src/img/dateEdit/arrow1.png);
-        }
-            
-        QDateEdit::down-button {
-            width: 16px;
-            height: 13px;
-            border-radius: 0px 0px 0px 11px;
-        }
-            
-        QDateEdit::down-button:pressed {
-            background: #191919;
-        }
-            
-        QDateEdit::down-arrow {
-            image: url(./src/img/dateEdit/arrow2.png)
-        }
-    """),
+    'dialog_date': ("""QDateEdit { background: #282828; border-radius: 11px; padding-left: 5px; font-family: 'Inter'; 
+    font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; } 
+    QDateEdit:disabled { background: #282828; border-radius: 11px; font-family: 'Inter'; font-style: normal; 
+    font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #A3A3A3; } QDateEdit::up-button 
+    { width: 16px; height: 13px; border-radius: 0px 11px 0px 0px; } QDateEdit::up-button:pressed { background: 
+    #191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width: 
+    16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; } 
+    QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
     'dialog_btnConfirm': ("font-family: 'Inter';\n"
                           "font-style: normal;\n"
                           "font-weight: 400;\n"
@@ -521,7 +472,7 @@ class MainWindow_Init(DialogMenu, object):
 
                 task_description.setObjectName(f"task_description_{index}")
                 task_description.setText(self._translate("MainWindow", f'{task_info[3]}  {task_info[2]}'
-                                         if (task_info[2] and not isMainPage) else task_info[3]))
+                if (task_info[2] and not isMainPage) else task_info[3]))
 
                 if isMainPage:
                     task_btn.page = task_description.page = 'main'
@@ -600,32 +551,26 @@ class MainWindow_Init(DialogMenu, object):
         # 1
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (self.date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_1, self.main_mainArea_tasks_1_layout)
-
         # 2
         date = (self.date + dt.timedelta(days=1))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_2, self.main_mainArea_tasks_2_layout)
-
         # 3
         date = (self.date + dt.timedelta(days=2))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_3, self.main_mainArea_tasks_3_layout)
-
         # 4
         date = (self.date + dt.timedelta(days=3))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_4, self.main_mainArea_tasks_4_layout)
-
         # 5
         date = (self.date + dt.timedelta(days=4))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_5, self.main_mainArea_tasks_5_layout)
-
         # 6
         date = (self.date + dt.timedelta(days=5))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
         self.load_tasks(tasks, True, self.main_mainArea_tasks_6, self.main_mainArea_tasks_6_layout)
-
         # 7
         date = (self.date + dt.timedelta(days=6))
         tasks = self.cur.execute('''SELECT * FROM tasks WHERE task_date = ?''', (date,)).fetchall()
@@ -924,7 +869,8 @@ class MainWindow_Init(DialogMenu, object):
 
         # Настройка отображения главного экрана
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setFixedSize(QtCore.QSize(1246, 698))
+        MainWindow.resize(QtCore.QSize(1246, 698))
+        MainWindow.setMinimumSize(QtCore.QSize(1246, 698))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/src/img/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -938,7 +884,7 @@ class MainWindow_Init(DialogMenu, object):
         # - Header
         self.header = QtWidgets.QGroupBox(self.centralwidget)
         self.header.setEnabled(True)
-        self.header.setGeometry(QtCore.QRect(0, 0, 269, 698))
+        self.header.setGeometry(QtCore.QRect(0, 0, 269, 1000000000))
         self.header.setStyleSheet("border: 0;\nbackground: #151515;")
         self.header.setObjectName("header")
         # - Logo
@@ -997,9 +943,26 @@ class MainWindow_Init(DialogMenu, object):
 
 
 class MainWindow(QtWidgets.QMainWindow, MainWindow_Init):
-    def __init__(self):
-        super().__init__()
+    resized = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent=parent)
         self.setupUi(self)
+        self.resized.connect(self.resizeUI)
+
+    def resizeEvent(self, event):
+        self.resized.emit()
+        return super(MainWindow, self).resizeEvent(event)
+
+    def resizeUI(self):
+        w = self.width()
+        h = self.height()
+
+        self.main.resize(QtCore.QSize(w, h + 20))
+        self.main_mainArea.resize(QtCore.QSize(w - 540, h))
+        self.main_secondArea.setGeometry(QtCore.QRect(w - 540, 20, 271, h))
+
+        self.dialog_container.resize(QtCore.QSize(w, h))
 
 
 def except_hook(cls, exception, traceback):
