@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sqlite3
@@ -189,16 +189,16 @@ class DialogMenu:
         if err == 'folder_name':
             self.dialog_folder_input.setText('')
             self.dialog_folder_input.setStyleSheet(STYLES['dialog_input_error'])
-            self.dialog_error_label.setGeometry(QtCore.QRect(29, 108, 400, 17))
+            self.dialog_error_label.setGeometry(QtCore.QRect(0, 108, 440, 17))
             self.dialog_error_label.setText(self._translate("Dialog", "Название папки должно быть длиной от 1 до 20 "
                                                                       "символов"))
         elif err == 'folders_count':
-            self.dialog_error_label.setGeometry(QtCore.QRect(88, 108, 265, 17))
+            self.dialog_error_label.setGeometry(QtCore.QRect(0, 108, 440, 17))
             self.dialog_error_label.setText(self._translate("Dialog", "Вы не можете создать больше 12 папок"))
         elif err == 'task_name':
             self.dialog_task_title_input.setText('')
             self.dialog_task_title_input.setStyleSheet(STYLES['dialog_input_error'])
-            self.dialog_error_label.setGeometry(QtCore.QRect(56, 204, 340, 17))
+            self.dialog_error_label.setGeometry(QtCore.QRect(0, 204, 440, 17))
             self.dialog_error_label.setText(self._translate("Dialog", "Название задачи должно быть от 1 до 30 "
                                                                       "символов"))
         self.dialog_error_label.show()
@@ -412,6 +412,7 @@ class DialogMenu:
 
         self.dialog_error_label = QtWidgets.QLabel(self.dialog)
         self.dialog_error_label.setStyleSheet(STYLES['dialog_error'])
+        self.dialog_error_label.setAlignment(QtCore.Qt.AlignCenter)
 
         self.buttons_container = QtWidgets.QGroupBox(self.dialog)
         self.buttons_container.setStyleSheet("border: 0;")
