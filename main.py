@@ -5,7 +5,6 @@ import sqlite3
 import sys
 import locale
 import datetime as dt
-import src
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
@@ -1030,9 +1029,10 @@ class MainWindow_Init(DialogMenu, object):
         MainWindow.resize(QtCore.QSize(1246, 698))
         MainWindow.setMinimumSize(QtCore.QSize(1246, 698))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/src/img/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("./src/img/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("background: #191919;")
+        MainWindow.setFont(QtGui.QFont('./src/font/Inter-VariableFont_slnt,wght.ttf'))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         # end Настройка отображения главного экрана

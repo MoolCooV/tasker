@@ -1,8 +1,0 @@
-<RCC>
-  <qresource prefix="src">
-    <file>img/task_done.svg</file>
-    <file>img/icon.png</file>
-    <file>img/logo.svg</file>
-    <file>img/add_folder.svg</file>
-  </qresource>
-</RCC>
