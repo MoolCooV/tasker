@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sqlite3
@@ -123,13 +123,13 @@ color: #FF4E4E;
                            "padding: 4px 10px;\n"
                            "color: #FFFFFF;"),
     'dialog_date': ("""QDateEdit { background: #282828; border-radius: 11px; padding-left: 5px; font-family: 'Inter'; 
-    font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; } 
-    QDateEdit:disabled { background: #282828; border-radius: 11px; font-family: 'Inter'; font-style: normal; 
-    font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #A3A3A3; } QDateEdit::up-button 
-    { width: 16px; height: 13px; border-radius: 0px 11px 0px 0px; } QDateEdit::up-button:pressed { background: 
-    #191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width: 
-    16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; } 
-    QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
+font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; } 
+QDateEdit:disabled { background: #282828; border-radius: 11px; font-family: 'Inter'; font-style: normal; 
+font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #A3A3A3; } QDateEdit::up-button 
+{ width: 16px; height: 13px; border-radius: 0px 11px 0px 0px; } QDateEdit::up-button:pressed { background: 
+#191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width: 
+16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; } 
+QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
     'dialog_btnConfirm': ("font-family: 'Inter';\n"
                           "font-style: normal;\n"
                           "font-weight: 400;\n"
@@ -299,7 +299,7 @@ class DialogMenu:
 
         folders = self.cur.execute('''SELECT * FROM folders''').fetchall()
 
-        for index, folder in enumerate(folders):
+        for folder in enumerate(folders):
             item = QtWidgets.QListWidgetItem(self.FolderSelect_folderList)
             self.FolderSelect_folderList.addItem(item)
             item.setText(self._translate("Dialog", folder[1]))
@@ -621,7 +621,7 @@ class MainWindow_Init(DialogMenu, object):
         folder_space = QtWidgets.QLabel()
         folder_space.setMinimumSize(QtCore.QSize(0, 0))
         if tasks:
-            for index, task_info in enumerate(tasks):
+            for task_info in enumerate(tasks):
                 task = QtWidgets.QGroupBox(container)
                 sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
                 sizePolicy.setHeightForWidth(task.sizePolicy().hasHeightForWidth())
