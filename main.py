@@ -122,14 +122,14 @@ color: #FF4E4E;
                            "line-height: 19px;\n"
                            "padding: 4px 10px;\n"
                            "color: #FFFFFF;"),
-    'dialog_date': ("""QDateEdit { background: #282828; border-radius: 11px; padding-left: 5px; font-family: 'Inter';
-    font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; } 
-    QDateEdit:disabled { background: #282828; border-radius: 11px; font-family: 'Inter'; font-style: normal; 
-    font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #A3A3A3; } QDateEdit::up-button 
-    { width: 16px; height: 13px; border-radius: 0px 11px 0px 0px; } QDateEdit::up-button:pressed { background: 
-    #191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width: 
-    16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; } 
-    QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
+    'dialog_date': ("""QDateEdit { background: #282828; border-radius: 11px; padding-left: 5px; font-family: 'Inter'; 
+font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; } 
+QDateEdit:disabled { background: #282828; border-radius: 11px; font-family: 'Inter'; font-style: normal; 
+font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #A3A3A3; } QDateEdit::up-button 
+{ width: 16px; height: 13px; border-radius: 0px 11px 0px 0px; } QDateEdit::up-button:pressed { background: 
+#191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width: 
+16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; } 
+QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
     'dialog_btnConfirm': ("font-family: 'Inter';\n"
                           "font-style: normal;\n"
                           "font-weight: 400;\n"
@@ -189,16 +189,16 @@ class DialogMenu:
         if err == 'folder_name':
             self.dialog_folder_input.setText('')
             self.dialog_folder_input.setStyleSheet(STYLES['dialog_input_error'])
-            self.dialog_error_label.setGeometry(QtCore.QRect(29, 108, 400, 17))
+            self.dialog_error_label.setGeometry(QtCore.QRect(0, 108, 440, 17))
             self.dialog_error_label.setText(self._translate("Dialog", "Название папки должно быть длиной от 1 до 20 "
                                                                       "символов"))
         elif err == 'folders_count':
-            self.dialog_error_label.setGeometry(QtCore.QRect(88, 108, 265, 17))
+            self.dialog_error_label.setGeometry(QtCore.QRect(0, 108, 440, 17))
             self.dialog_error_label.setText(self._translate("Dialog", "Вы не можете создать больше 12 папок"))
         elif err == 'task_name':
             self.dialog_task_title_input.setText('')
             self.dialog_task_title_input.setStyleSheet(STYLES['dialog_input_error'])
-            self.dialog_error_label.setGeometry(QtCore.QRect(56, 204, 340, 17))
+            self.dialog_error_label.setGeometry(QtCore.QRect(0, 204, 440, 17))
             self.dialog_error_label.setText(self._translate("Dialog", "Название задачи должно быть от 1 до 30 "
                                                                       "символов"))
         self.dialog_error_label.show()
@@ -412,6 +412,7 @@ class DialogMenu:
 
         self.dialog_error_label = QtWidgets.QLabel(self.dialog)
         self.dialog_error_label.setStyleSheet(STYLES['dialog_error'])
+        self.dialog_error_label.setAlignment(QtCore.Qt.AlignCenter)
 
         self.buttons_container = QtWidgets.QGroupBox(self.dialog)
         self.buttons_container.setStyleSheet("border: 0;")
