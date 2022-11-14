@@ -726,8 +726,11 @@ class MainWindow_Init(DialogMenu, object):
     def load_tasks(self, tasks, isMainPage, container, layout, withDate=False):
         """Loads tasks to special groupbox."""
         folder_space = QtWidgets.QLabel()
-        folder_space.setMinimumSize(QtCore.QSize(0, 0))
         if tasks:
+            if len(tasks) > 20:
+                folder_space.setFixedSize(QtCore.QSize(0, 0))
+            else:
+                folder_space.resize(QtCore.QSize(0, 0))
             for task_info in tasks:
                 folder = self.cur.execute('''SELECT * FROM folders WHERE folder_id = ?''', (task_info[1],)).fetchone()
 
