@@ -686,8 +686,8 @@ class MainWindow_Init(DialogMenu, object):
             self.cur.execute(f'''INSERT INTO tasks (task_description, task_date, folder_id) VALUES (?, ?, ?)''',
                              (title, date, folder))
         elif request == 'edit':
-            self.cur.execute(f'''UPDATE tasks SET (task_description, task_date, folder_id) = (?, ?, ?) 
-WHERE task_id = ? ''', (title, date, folder, task_id))
+            self.cur.execute(f'''UPDATE tasks SET (task_description, task_date, folder_id) = (?, ?, ?)
+            WHERE task_id = ? ''', (title, date, folder, task_id))
         elif request == 'delete':
             self.cur.execute('''DELETE FROM tasks WHERE task_id = ?''', (self.sender().id,))
 
