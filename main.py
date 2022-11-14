@@ -207,7 +207,9 @@ class DialogMenu:
         self.dialog_container.hide()
         self.dialog_folder_container.hide()
         self.dialog_task_container.hide()
+        self.dialog_error_label.hide()
         self.dialog_btnDelete.hide()
+        self.dialog_task_folder_cancel_btn.hide()
 
     def dialog_noDate_action(self):
         if self.sender().status:
@@ -237,6 +239,21 @@ class DialogMenu:
                     self.dialog_error('folder_name')
             else:
                 self.dialog_error('folders_count')
+        elif self.sender().action == 'edit_folder':
+            if 1 <= len(self.dialog_folder_input.text()) <= 20:
+                self.cur.execute('''UPDATE folders SET folder_title = ? WHERE folder_id = ?''',
+                                 (self.dialog_folder_input.text(), self.sender().id))
+                self._folders_btn_setup()
+                self.main_page_load(True)
+                self.dialog_action_cancel()
+            else:
+                self.dialog_error('folder_name')
+        elif self.sender().action == 'delete_folder':
+            self.cur.execute('''UPDATE tasks SET folder_id = ? WHERE folder_id = ?''', (None, self.sender().id))
+            self.cur.execute('''DELETE FROM folders WHERE folder_id = ?''', (self.sender().id,))
+            self._folders_btn_setup()
+            self.main_page_load(True)
+            self.dialog_action_cancel()
         elif self.sender().action == 'add_task':
             if 1 <= len(self.dialog_task_title_input.text()) <= 30:
                 if self.dialog_task_date_noDate_btn.status:
@@ -244,12 +261,25 @@ class DialogMenu:
                 else:
                     date = self.dialog_task_date_edit.date().toPyDate()
 
-                self.add_task(self.dialog_task_title_input.text(), date, self.dialog_folderSelect_folder)
+                self.task_db_requests('add', self.dialog_task_title_input.text(), date, self.dialog_folderSelect_folder)
                 self.dialog_action_cancel()
-
-                self.main_page_load(True)
             else:
                 self.dialog_error('task_name')
+        elif self.sender().action == 'edit_task':
+            if 1 <= len(self.dialog_task_title_input.text()) <= 30:
+                if self.dialog_task_date_noDate_btn.status:
+                    date = None
+                else:
+                    date = self.dialog_task_date_edit.date().toPyDate()
+
+                self.task_db_requests('edit', self.dialog_task_title_input.text(),
+                                      date, self.dialog_folderSelect_folder, self.sender().task_id)
+                self.dialog_action_cancel()
+            else:
+                self.dialog_error('task_name')
+        elif self.sender().action == 'delete_task':
+            self.task_db_requests('delete', task_id=self.sender().id)
+            self.dialog_action_cancel()
         elif self.sender().action == 'connect_folder':
             self.dialog_folderSelect_folder = self.FolderSelect_folderList.currentItem().id
 
@@ -267,21 +297,6 @@ class DialogMenu:
             self.dialog_task_folder_btn.setText(self._translate("MainWindow", "Создать задачу"))
             self.dialog_task_folder_btn.setStyleSheet(STYLES['btn_action'])
             self.dialog_task_folder_cancel_btn.hide()
-        elif self.sender().action == 'edit_folder':
-            if 1 <= len(self.dialog_folder_input.text()) <= 20:
-                self.cur.execute('''UPDATE folders SET folder_title = ? WHERE folder_id = ?''',
-                                 (self.dialog_folder_input.text(), self.sender().id))
-                self._folders_btn_setup()
-                self.main_page_load(True)
-                self.dialog_action_cancel()
-            else:
-                self.dialog_error('folder_name')
-        elif self.sender().action == 'delete_folder':
-            self.cur.execute('''UPDATE tasks SET folder_id = ? WHERE folder_id = ?''', (None, self.sender().id))
-            self.cur.execute('''DELETE FROM folders WHERE folder_id = ?''', (self.sender().id,))
-            self._folders_btn_setup()
-            self.main_page_load(True)
-            self.dialog_action_cancel()
 
         self.db.commit()
 
@@ -299,7 +314,7 @@ class DialogMenu:
 
         folders = self.cur.execute('''SELECT * FROM folders''').fetchall()
 
-        for folder in enumerate(folders):
+        for folder in folders:
             item = QtWidgets.QListWidgetItem(self.FolderSelect_folderList)
             self.FolderSelect_folderList.addItem(item)
             item.setText(self._translate("Dialog", folder[1]))
@@ -310,14 +325,16 @@ class DialogMenu:
         self.FolderSelect_Dialog.show()
 
     def dialog_menu_load(self):
+        self.hide_dialog()
+
         if self.sender().action == 'add_folder':
             self.dialog.setFixedSize(QtCore.QSize(440, 190))
             self.dialog_title.setText(self._translate("MainWindow", "Создать папку"))
             self.buttons_container.setGeometry(QtCore.QRect(105, 134, self.dialog_btnConfirm.width() * 2 + 10, 36))
             self.dialog_folder_input.setStyleSheet(STYLES['dialog_input'])
-            self.dialog_folder_container.show()
-
             self.dialog_btnConfirm.setText(self._translate("MainWindow", "Создать"))
+
+            self.dialog_folder_container.show()
         elif self.sender().action == 'add_task':
             self.dialog.setFixedSize(QtCore.QSize(440, 287))
             self.dialog_title.setText(self._translate("MainWindow", "Создать задачу"))
@@ -347,28 +364,77 @@ class DialogMenu:
                 self.dialog_task_folder_btn.setText(self._translate("MainWindow", "Добавить в папку"))
 
                 self.dialog_folderSelect_folder = None
-                self.dialog_task_folder_cancel_btn.hide()
 
             self.dialog_task_container.show()
         elif self.sender().action == 'edit_folder':
+            self.dialog.setFixedSize(QtCore.QSize(440, 190))
+            self.dialog_folder_input.setStyleSheet(STYLES['dialog_input'])
+
             folder = self.cur.execute('''SELECT * FROM folders WHERE folder_id = ?''', (self.sender().id,)).fetchone()
 
-            self.dialog.setFixedSize(QtCore.QSize(440, 190))
             self.dialog_title.setText(self._translate("MainWindow", f"Редактировать папку"))
             self.buttons_container.setGeometry(QtCore.QRect(82, 134, self.dialog_btnConfirm.width() * 2 + 10, 36))
-            self.dialog_folder_input.setStyleSheet(STYLES['dialog_input'])
             self.dialog_folder_input.setText(self._translate("MainWindow", folder[1]))
-
             self.dialog_btnDelete.setGeometry(QtCore.QRect(322, 134, 36, 36))
             self.dialog_btnDelete.action = "delete_folder"
             self.dialog_btnDelete.id = self.sender().id
             self.dialog_btnDelete.show()
-
             self.dialog_btnConfirm.id = self.sender().id
             self.dialog_btnConfirm.setText(self._translate("MainWindow", "Сохранить"))
             self.dialog_folder_container.show()
+        elif self.sender().action == 'edit_task':
+            task = self.cur.execute('''SELECT * FROM tasks WHERE task_id = ?''', (self.sender().id,)).fetchone()
 
-        self.dialog_error_label.hide()
+            self.dialog.setFixedSize(QtCore.QSize(440, 287))
+            self.dialog_title.setText(self._translate("MainWindow", "Редактировать задачу"))
+            self.buttons_container.setGeometry(QtCore.QRect(83, 230, self.dialog_btnConfirm.width() * 2 + 10, 36))
+
+            self.dialog_btnDelete.setGeometry(QtCore.QRect(322, 230, 36, 36))
+            self.dialog_btnDelete.action = "delete_task"
+            self.dialog_btnDelete.id = self.sender().id
+
+            self.dialog_task_title_input.setText(task[3])
+            self.dialog_task_title_input.setStyleSheet(STYLES['dialog_input'])
+
+            if task[2]:
+                date = dt.date.fromisoformat(task[2])
+                self.dialog_task_date_edit.setDate(date)
+                self.dialog_task_date_edit.setDisabled(False)
+                self.dialog_task_date_noDate_btn.setStyleSheet(STYLES['task_btn_inactive'])
+                self.dialog_task_date_noDate_btn.status = False
+                self.dialog_task_date_noDate_btn.setIcon(QtGui.QIcon(""))
+            else:
+                self.dialog_task_date_edit.setDate(self.date)
+                self.dialog_task_date_edit.setDisabled(True)
+                self.dialog_task_date_noDate_btn.setStyleSheet(STYLES['task_btn_active'])
+                self.dialog_task_date_noDate_btn.status = True
+                self.dialog_task_date_noDate_btn.setIcon(QtGui.QIcon("./src/img/task_done.png"))
+
+            self.dialog_btnConfirm.setText(self._translate("MainWindow", "Сохранить"))
+
+            if task[1]:
+                folder = self.cur.execute('''SELECT * FROM folders WHERE folder_id = ?''', (task[1],)).fetchone()
+
+                self.dialog_task_folder_btn.setStyleSheet(STYLES['btn_action_active'])
+
+                if len(self.sender().folder[1]) > 14:
+                    self.dialog_task_folder_btn.setText(f'{folder[1][:14]}...')
+                else:
+                    self.dialog_task_folder_btn.setText(folder[1])
+
+                self.dialog_folderSelect_folder = folder[0]
+                self.dialog_task_folder_cancel_btn.show()
+            else:
+                self.dialog_task_folder_btn.setStyleSheet(STYLES['btn_action'])
+                self.dialog_task_folder_btn.setText(self._translate("MainWindow", "Добавить в папку"))
+
+                self.dialog_folderSelect_folder = None
+
+            self.dialog_task_container.show()
+            self.dialog_btnDelete.show()
+
+            self.dialog_btnConfirm.task_id = self.sender().id
+
         self.dialog_btnConfirm.action = self.sender().action
         self.dialog_container.show()
 
@@ -597,9 +663,17 @@ class MainWindow_Init(DialogMenu, object):
         elif self.sender().page == 'folder':
             self.folder_page_load(True)
 
-    def add_task(self, title, date, folder):
-        self.cur.execute(f'''INSERT INTO tasks (task_description, task_date, folder_id) VALUES (?, ?, ?)''',
-                         (title, date, folder))
+    def task_db_requests(self, request, title=None, date=None, folder=None, task_id=None):
+        if request == 'add':
+            self.cur.execute(f'''INSERT INTO tasks (task_description, task_date, folder_id) VALUES (?, ?, ?)''',
+                             (title, date, folder))
+        elif request == 'edit':
+            self.cur.execute(f'''UPDATE tasks SET (task_description, task_date, folder_id) = (?, ?, ?) 
+            WHERE task_id = ? ''',
+                             (title, date, folder, task_id))
+        elif request == 'delete':
+            self.cur.execute('''DELETE FROM tasks WHERE task_id = ?''', (self.sender().id,))
+
         self.db.commit()
 
         self.folder_click(self.btn_menu_main, self.active_button)
@@ -607,6 +681,8 @@ class MainWindow_Init(DialogMenu, object):
         self.active_button = self.btn_menu_main
         self.active_button.setEnabled(False)
         self.btn_menu_main.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
+        self.main_page_load(True)
 
     def delete_task(self):
         self.cur.execute('''DELETE FROM tasks WHERE task_id = ?''', (self.sender().id,))
@@ -621,7 +697,9 @@ class MainWindow_Init(DialogMenu, object):
         folder_space = QtWidgets.QLabel()
         folder_space.setMinimumSize(QtCore.QSize(0, 0))
         if tasks:
-            for task_info in enumerate(tasks):
+            for task_info in tasks:
+                folder = self.cur.execute('''SELECT * FROM folders WHERE folder_id = ?''', (task_info[1],)).fetchone()
+
                 task = QtWidgets.QGroupBox(container)
                 sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
                 sizePolicy.setHeightForWidth(task.sizePolicy().hasHeightForWidth())
@@ -640,10 +718,16 @@ class MainWindow_Init(DialogMenu, object):
                 task_description.setStyleSheet(STYLES['task_description'])
                 task_description.setWordWrap(True)
                 task_description.id = task_info[0]
+                task_description.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+                task_description.folder = folder
 
                 if not task_info[4]:
                     task_btn.setStyleSheet(STYLES['task_btn_inactive'])
                     task_btn.status = False
+
+                    task_description.id = task_info[0]
+                    task_description.action = 'edit_task'
+                    task_description.clicked.connect(self.dialog_menu_load)
                 else:
                     task_btn.setStyleSheet(STYLES['task_btn_active'])
                     task_btn_icon = QtGui.QIcon()
@@ -655,7 +739,6 @@ class MainWindow_Init(DialogMenu, object):
                     font = task_description.font()
                     font.setStrikeOut(True)
                     task_description.setFont(font)
-                    task_description.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
                     task_description.clicked.connect(self.delete_task)
 
                 if task_info[2] and withDate:
