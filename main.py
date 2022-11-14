@@ -157,7 +157,15 @@ QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
                           "font-weight: 400;"
                           "font-size: 16px;"
                           "line-height: 19px;"
-                          "color: #FFFFFF;")
+                          "color: #FFFFFF;"),
+    'scroll_bar': ('''QScrollArea { border: 0; } QGroupBox { border: 0; } QScrollBar:vertical { width: 15px; margin: 
+20px 0 20px 0; } QScrollBar::handle:vertical { min-height: 10px; background: #282828; } 
+QScrollBar::add-line:vertical { background: #282828; width: 20px; height: 20px; subcontrol-position: bottom; 
+subcontrol-origin: margin; } QScrollBar::sub-line:vertical { background: #282828; width: 20px; height: 20px; 
+subcontrol-position: top; subcontrol-origin: margin; } QScrollBar::up-arrow:vertical, 
+QScrollBar::down-arrow:vertical { width: 16px; height: 13px; } QScrollBar::up-arrow:vertical { image: url(
+./src/img/dateEdit/arrow1.png); } QScrollBar::down-arrow:vertical { image: url(./src/img/dateEdit/arrow2.png); } 
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }''')
 }
 MONTHS = {
     'Январь': 'Января',
@@ -924,7 +932,7 @@ class MainWindow_Init(DialogMenu, object):
         # - Настройка main_mainArea
         self.main_mainArea = QtWidgets.QScrollArea(self.main_page)
         self.main_mainArea.setWidgetResizable(True)
-        self.main_mainArea.setStyleSheet("border: 0;")
+        self.main_mainArea.setStyleSheet(STYLES['scroll_bar'])
         self.main_mainArea_contents = QtWidgets.QWidget()
 
         # - Настройка gridLayout
@@ -1028,11 +1036,9 @@ class MainWindow_Init(DialogMenu, object):
 
         # Настройка main_secondArea
         self.main_secondArea = QtWidgets.QScrollArea(self.main_page)
-        self.main_secondArea.setGeometry(QtCore.QRect(708, 20, 271, 691))
         self.main_secondArea.setWidgetResizable(True)
-        self.main_secondArea.setStyleSheet("border: 0;background: #151515;")
+        self.main_secondArea.setStyleSheet(STYLES['scroll_bar'] + "\nQScrollArea{ background: #151515;}")
         self.main_secondArea_contents = QtWidgets.QWidget()
-        self.main_secondArea_contents.setGeometry(QtCore.QRect(0, 0, 271, 691))
 
         self.main_secondArea_layout = QtWidgets.QGridLayout(self.main_secondArea_contents)
         self.main_secondArea_layout.setContentsMargins(25, 25, 25, 25)
@@ -1091,10 +1097,9 @@ class MainWindow_Init(DialogMenu, object):
         self.folder_btn_add_task.clicked.connect(self.dialog_menu_load)
 
         self.folder_area = QtWidgets.QScrollArea(self.folder_page)
-        self.folder_area.setGeometry(QtCore.QRect(0, 90, 977, 628))
-        self.folder_area.setMaximumSize(QtCore.QSize(16777215, 977))
+        self.folder_area.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.folder_area.setWidgetResizable(True)
-        self.folder_area.setStyleSheet("border: 0;")
+        self.folder_area.setStyleSheet(STYLES['scroll_bar'])
 
         self.folder_area_contents = QtWidgets.QWidget()
         self.folder_area_contents.setGeometry(QtCore.QRect(0, 0, 977, 628))
@@ -1202,9 +1207,11 @@ class MainWindow(QtWidgets.QMainWindow, MainWindow_Init):
         self.main.setFixedSize(QtCore.QSize(w, h + 20))
         self.main_btn_add_task.setGeometry(QtCore.QRect(w - 600, 43, 37, 37))
         self.main_mainArea.move(QtCore.QPoint(0, 90))
-        self.main_mainArea.setFixedSize(QtCore.QSize(w - 540, h))
+        self.main_mainArea.setFixedSize(QtCore.QSize(w - 540, h - 70))
         self.main_secondArea.move(QtCore.QPoint(w - 540, 20))
         self.main_secondArea.setFixedSize(QtCore.QSize(271, h))
+        self.folder_area.move(QtCore.QPoint(0, 90))
+        self.folder_area.setFixedSize(QtCore.QSize(w - 269, h - 70))
         self.folder_btn_add_task.setGeometry(QtCore.QRect(w - 331, 43, 37, 37))
         self.dialog_container.resize(QtCore.QSize(w, h))
 
