@@ -16,83 +16,83 @@ if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
 STYLES = {
-    'title': ("font-family: \'Inter\';\n"
-              "font-style: normal;\n"
-              "font-weight: 700;\n"
-              "font-size: 27px;\n"
-              "line-height: 29px;\n"
-              "letter-spacing: -0.055em;\n"
+    'title': ("font-family: \'Inter\';"
+              "font-style: normal;"
+              "font-weight: 700;"
+              "font-size: 27px;"
+              "line-height: 29px;"
+              "letter-spacing: -0.055em;"
               "color: #FFFFFF;"),
-    'subtitle': ("font-family: \'Inter\';\n"
-                 "font-style: normal;\n"
-                 "font-weight: 700;\n"
-                 "font-size: 24px;\n"
-                 "line-height: 29px;\n"
-                 "letter-spacing: -0.055em;\n"
+    'subtitle': ("font-family: \'Inter\';"
+                 "font-style: normal;"
+                 "font-weight: 700;"
+                 "font-size: 24px;"
+                 "line-height: 29px;"
+                 "letter-spacing: -0.055em;"
                  "color: #FFFFFF;"),
-    'btn_active': ("background: #1490AA;\n"
-                   "border-radius: 11px;\n"
-                   "font-family: \'Inter\';\n"
-                   "font-style: normal;\n"
-                   "font-weight: 400;\n"
-                   "font-size: 16px;\n"
-                   "line-height: 19px;\n"
-                   "text-align: left;\n"
-                   "color: #FFFFFF;\n"
+    'btn_active': ("background: #1490AA;"
+                   "border-radius: 11px;"
+                   "font-family: \'Inter\';"
+                   "font-style: normal;"
+                   "font-weight: 400;"
+                   "font-size: 16px;"
+                   "line-height: 19px;"
+                   "text-align: left;"
+                   "color: #FFFFFF;"
                    "padding: 8px 0 8px 15px;"),
-    'btn_inactive': ("background: #282828;\n"
-                     "border-radius: 11px;\n"
-                     "font-family: \'Inter\';\n"
-                     "font-style: normal;\n"
-                     "font-weight: 400;\n"
-                     "font-size: 16px;\n"
-                     "line-height: 19px;\n"
-                     "text-align: left;\n"
-                     "color: #FFFFFF;\n"
+    'btn_inactive': ("background: #282828;"
+                     "border-radius: 11px;"
+                     "font-family: \'Inter\';"
+                     "font-style: normal;"
+                     "font-weight: 400;"
+                     "font-size: 16px;"
+                     "line-height: 19px;"
+                     "text-align: left;"
+                     "color: #FFFFFF;"
                      "padding: 8px 0 8px 15px;"),
-    'btn_action': ("background: #282828;\n"
-                   "border-radius: 11px;\n"
-                   "font-family: \'Inter\';\n"
-                   "font-style: normal;\n"
-                   "font-weight: 400;\n"
-                   "font-size: 16px;\n"
-                   "line-height: 19px;\n"
-                   "text-align: center;\n"
-                   "color: #FFFFFF;\n"
+    'btn_action': ("background: #282828;"
+                   "border-radius: 11px;"
+                   "font-family: \'Inter\';"
+                   "font-style: normal;"
+                   "font-weight: 400;"
+                   "font-size: 16px;"
+                   "line-height: 19px;"
+                   "text-align: center;"
+                   "color: #FFFFFF;"
                    "padding: 8px 0 8px 0;"),
-    'btn_action_active': ("background: #1490AA;\n"
-                          "border-radius: 11px;\n"
-                          "font-family: \'Inter\';\n"
-                          "font-style: normal;\n"
-                          "font-weight: 400;\n"
-                          "font-size: 16px;\n"
-                          "line-height: 19px;\n"
-                          "text-align: center;\n"
-                          "color: #FFFFFF;\n"
+    'btn_action_active': ("background: #1490AA;"
+                          "border-radius: 11px;"
+                          "font-family: \'Inter\';"
+                          "font-style: normal;"
+                          "font-weight: 400;"
+                          "font-size: 16px;"
+                          "line-height: 19px;"
+                          "text-align: center;"
+                          "color: #FFFFFF;"
                           "padding: 8px 0 8px 0;"),
-    'task_btn_active': ("background: #1490AA;\n"
+    'task_btn_active': ("background: #1490AA;"
                         "border-radius: 5px;"),
-    'task_btn_inactive': ("border: 1.25px solid #FFFFFF;\n"
-                          "border-radius: 5px;\n"),
-    'task_description': ("font-family: \'Inter\';\n"
-                         "font-style: normal;\n"
-                         "font-weight: 400;\n"
-                         "font-size: 16px;\n"
-                         "line-height: 16px;\n"
-                         "letter-spacing: -0.055em;\n"
+    'task_btn_inactive': ("border: 1.25px solid #FFFFFF;"
+                          "border-radius: 5px;"),
+    'task_description': ("font-family: \'Inter\';"
+                         "font-style: normal;"
+                         "font-weight: 400;"
+                         "font-size: 16px;"
+                         "line-height: 16px;"
+                         "letter-spacing: -0.055em;"
                          "color: #FFFFFF;"),
-    'no_tasks': ("font-family: \'Inter\';\n"
-                 "font-style: normal;\n"
-                 "font-weight: 400;\n"
-                 "font-size: 16px;\n"
-                 "line-height: 16px;\n"
-                 "letter-spacing: -0.055em;\n"
+    'no_tasks': ("font-family: \'Inter\';"
+                 "font-style: normal;"
+                 "font-weight: 400;"
+                 "font-size: 16px;"
+                 "line-height: 16px;"
+                 "letter-spacing: -0.055em;"
                  "color: #A3A3A3;"),
-    'dialog_label': ("font-family: \'Inter\';\n"
-                     "font-style: normal;\n"
-                     "font-weight: 400;\n"
-                     "font-size: 16px;\n"
-                     "line-height: 19px;\n"
+    'dialog_label': ("font-family: \'Inter\';"
+                     "font-style: normal;"
+                     "font-weight: 400;"
+                     "font-size: 16px;"
+                     "line-height: 19px;"
                      "color: #FFFFFF;"),
     'dialog_error': ('''
 font-family: 'Inter';
@@ -103,24 +103,24 @@ line-height: 16px;
 text-align: center;
 color: #FF4E4E;
 '''),
-    'dialog_input': ("background: #282828;\n"
-                     "border-radius: 11px;\n"
-                     "font-family: \'Inter\';\n"
-                     "font-style: normal;\n"
-                     "font-weight: 300;\n"
-                     "font-size: 15px;\n"
-                     "line-height: 19px;\n"
-                     "padding: 4px 10px;\n"
+    'dialog_input': ("background: #282828;"
+                     "border-radius: 11px;"
+                     "font-family: \'Inter\';"
+                     "font-style: normal;"
+                     "font-weight: 300;"
+                     "font-size: 15px;"
+                     "line-height: 19px;"
+                     "padding: 4px 10px;"
                      "color: #FFFFFF;"),
-    'dialog_input_error': ("background: #282828;\n"
-                           "border-radius: 11px;\n"
-                           "border: 1px solid #FF4E4E;\n"
-                           "font-family: \'Inter\';\n"
-                           "font-style: normal;\n"
-                           "font-weight: 300;\n"
-                           "font-size: 15px;\n"
-                           "line-height: 19px;\n"
-                           "padding: 4px 10px;\n"
+    'dialog_input_error': ("background: #282828;"
+                           "border-radius: 11px;"
+                           "border: 1px solid #FF4E4E;"
+                           "font-family: \'Inter\';"
+                           "font-style: normal;"
+                           "font-weight: 300;"
+                           "font-size: 15px;"
+                           "line-height: 19px;"
+                           "padding: 4px 10px;"
                            "color: #FFFFFF;"),
     'dialog_date': ("""QDateEdit { background: #282828; border-radius: 11px; padding-left: 5px; font-family: 'Inter'; 
 font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; } 
@@ -130,33 +130,33 @@ font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color:
 #191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width: 
 16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; } 
 QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
-    'dialog_btnConfirm': ("font-family: 'Inter';\n"
-                          "font-style: normal;\n"
-                          "font-weight: 400;\n"
-                          "font-size: 16px;\n"
-                          "line-height: 19px;\n"
-                          "text-align: center;\n"
-                          "color: #FFFFFF;\n"
-                          "background: #1490AA;\n"
+    'dialog_btnConfirm': ("font-family: 'Inter';"
+                          "font-style: normal;"
+                          "font-weight: 400;"
+                          "font-size: 16px;"
+                          "line-height: 19px;"
+                          "text-align: center;"
+                          "color: #FFFFFF;"
+                          "background: #1490AA;"
                           "border-radius: 11px;"),
-    'dialog_btnCancel': ("font-family: 'Inter';\n"
-                         "font-style: normal;\n"
-                         "font-weight: 400;\n"
-                         "font-size: 16px;\n"
-                         "line-height: 19px;\n"
-                         "text-align: center;\n"
-                         "color: #FFFFFF;\n"
-                         "background: #282828;\n"
-                         "border-radius: 11px;\n"),
-    'dialog_folderList': ("background: #191919;\n"
-                          "border-radius: 11px;\n"
-                          "border: 0;\n"
-                          "padding: 5px 3px 5px 3px;\n"
-                          "font-family: \'Inter\';\n"
-                          "font-style: normal;\n"
-                          "font-weight: 400;\n"
-                          "font-size: 16px;\n"
-                          "line-height: 19px;\n"
+    'dialog_btnCancel': ("font-family: 'Inter';"
+                         "font-style: normal;"
+                         "font-weight: 400;"
+                         "font-size: 16px;"
+                         "line-height: 19px;"
+                         "text-align: center;"
+                         "color: #FFFFFF;"
+                         "background: #282828;"
+                         "border-radius: 11px;"),
+    'dialog_folderList': ("background: #191919;"
+                          "border-radius: 11px;"
+                          "border: 0;"
+                          "padding: 5px 3px 5px 3px;"
+                          "font-family: \'Inter\';"
+                          "font-style: normal;"
+                          "font-weight: 400;"
+                          "font-size: 16px;"
+                          "line-height: 19px;"
                           "color: #FFFFFF;")
 }
 MONTHS = {
@@ -461,7 +461,7 @@ class DialogMenu:
     def _dialog_menu_setup(self):
         self.dialog_container = QtWidgets.QGroupBox(self.centralwidget)
         self.dialog_container.resize(QtCore.QSize(1246, 698))
-        self.dialog_container.setStyleSheet("background: rgba(0, 0, 0, 0.5);\nborder: 0;")
+        self.dialog_container.setStyleSheet("background: rgba(0, 0, 0, 0.5);border: 0;")
 
         self.dialog_container_layout = QtWidgets.QGridLayout(self.dialog_container)
         self.dialog_container_layout.setContentsMargins(0, 5, 0, 0)
@@ -1030,7 +1030,7 @@ class MainWindow_Init(DialogMenu, object):
         self.main_secondArea = QtWidgets.QScrollArea(self.main_page)
         self.main_secondArea.setGeometry(QtCore.QRect(708, 20, 271, 691))
         self.main_secondArea.setWidgetResizable(True)
-        self.main_secondArea.setStyleSheet("border: 0;\nbackground: #151515;")
+        self.main_secondArea.setStyleSheet("border: 0;background: #151515;")
         self.main_secondArea_contents = QtWidgets.QWidget()
         self.main_secondArea_contents.setGeometry(QtCore.QRect(0, 0, 271, 691))
 
@@ -1125,7 +1125,7 @@ class MainWindow_Init(DialogMenu, object):
         # - Header
         self.header = QtWidgets.QGroupBox(self.centralwidget)
         self.header.setEnabled(True)
-        self.header.setStyleSheet("border: 0;\nbackground: #151515;")
+        self.header.setStyleSheet("border: 0;background: #151515;")
         # - Logo
         self.logo = QtWidgets.QLabel(self.header)
         self.logo.setGeometry(QtCore.QRect(25, 20, 145, 50))
