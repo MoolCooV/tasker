@@ -9,12 +9,14 @@ import datetime as dt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
+# High DPI support
 if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
+# Stylesheets for UI
 STYLES = {
     'title': ("font-family: \'Inter\';"
               "font-style: normal;"
@@ -167,6 +169,7 @@ QScrollBar::down-arrow:vertical { width: 16px; height: 13px; } QScrollBar::up-ar
 ./src/img/dateEdit/arrow1.png); } QScrollBar::down-arrow:vertical { image: url(./src/img/dateEdit/arrow2.png); } 
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }''')
 }
+# Months in the accusative
 MONTHS = {
     'Январь': 'Января',
     'Февраль': 'Февраля',
@@ -184,6 +187,7 @@ MONTHS = {
 
 
 class DialogMenu:
+    """Class for dialog menu."""
     def __init__(self):
         self._translate = QtCore.QCoreApplication.translate
 
@@ -192,8 +196,8 @@ class DialogMenu:
 
         self.folder_folderSelect = []
 
-    # - Dialog window methods
     def dialog_error(self, err):
+        """Showing the error message."""
         if err == 'folder_name':
             self.dialog_folder_input.setText('')
             self.dialog_folder_input.setStyleSheet(STYLES['dialog_input_error'])
@@ -212,6 +216,7 @@ class DialogMenu:
         self.dialog_error_label.show()
 
     def hide_dialog(self):
+        """Hides dialog."""
         self.dialog_container.hide()
         self.dialog_folder_container.hide()
         self.dialog_task_container.hide()
@@ -220,6 +225,7 @@ class DialogMenu:
         self.dialog_task_folder_cancel_btn.hide()
 
     def dialog_noDate_action(self):
+        """Makes the button for no date choice is active"""
         if self.sender().status:
             self.sender().setStyleSheet(STYLES['task_btn_inactive'])
             self.sender().setIcon(QtGui.QIcon(''))
@@ -237,6 +243,7 @@ class DialogMenu:
             self.dialog_task_date_edit.setDisabled(True)
 
     def dialog_buttons_actions(self):
+        """Actions with database if the confirm button is clicked"""
         if self.sender().action == 'add_folder':
             folders = len(self.cur.execute('''SELECT * FROM folders''').fetchall())
             if folders < 12:
@@ -309,10 +316,12 @@ class DialogMenu:
         self.db.commit()
 
     def dialog_action_cancel(self):
+        """Hide dialog if the cancel button is clicked."""
         self.dialog_folder_input.setText(self._translate("MainWindow", ""))
         self.hide_dialog()
 
     def dialog_folderSelect_load(self):
+        """Loads the dialog for folder selection."""
         self.FolderSelect_folderList.deleteLater()
 
         self.FolderSelect_folderList = QtWidgets.QListWidget(self.FolderSelect_Dialog)
@@ -333,6 +342,7 @@ class DialogMenu:
         self.FolderSelect_Dialog.show()
 
     def dialog_menu_load(self):
+        """Loads the dialog menu for special case."""
         self.hide_dialog()
 
         if self.sender().action == 'add_folder':
@@ -447,6 +457,7 @@ class DialogMenu:
         self.dialog_container.show()
 
     def _dialog_folderSelect_setup(self):
+        """Sets up the dialog for folder selection."""
         self.FolderSelect_Dialog = QtWidgets.QDialog(self.dialog)
         self.FolderSelect_Dialog.setFixedSize(QtCore.QSize(440, 286))
         self.FolderSelect_Dialog.setStyleSheet("background: #151515;")
@@ -467,6 +478,7 @@ class DialogMenu:
         self.FolderSelect_layout.addWidget(self.FolderSelect_title, 0, 0, 1, 1)
 
     def _dialog_menu_setup(self):
+        """Sets up the dialog menu."""
         self.dialog_container = QtWidgets.QGroupBox(self.centralwidget)
         self.dialog_container.resize(QtCore.QSize(1246, 698))
         self.dialog_container.setStyleSheet("background: rgba(0, 0, 0, 0.5);border: 0;")
@@ -599,6 +611,7 @@ class DialogMenu:
 
 
 class MainWindow_Init(DialogMenu, object):
+    """The base class for MainWindow"""
     def __init__(self):
         super().__init__()
 
@@ -613,9 +626,11 @@ class MainWindow_Init(DialogMenu, object):
         self.BTN_HEADER_SPACING = 10
 
     class ClickedLabel(QtWidgets.QLabel):
+        """Does clickable label with QLabel."""
         clicked = pyqtSignal()
 
         def mouseReleaseEvent(self, e):
+            """Click event for label."""
             super().mouseReleaseEvent(e)
             self.clicked.emit()
 
@@ -623,6 +638,7 @@ class MainWindow_Init(DialogMenu, object):
     # - Folders methods
     @staticmethod
     def folder_click(sender_btn, active_button):
+        """Changes folder button status and color."""
         if sender_btn == active_button:
             pass
         else:
@@ -632,6 +648,7 @@ class MainWindow_Init(DialogMenu, object):
             active_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
     def add_folder(self):
+        """Adds folder in the database."""
         self.cur.execute(f'''INSERT INTO folders (folder_title) VALUES (?)''',
                          (self.dialog_folder_input.text(),))
         self.db.commit()
@@ -639,6 +656,7 @@ class MainWindow_Init(DialogMenu, object):
         self.main_page_load(True)
 
     def load_folders(self, folders):
+        """Loads folder buttons in header."""
         for index, folder in enumerate(folders):
             button = QtWidgets.QPushButton(self.buttons)
             button.setGeometry(QtCore.QRect(25, self.BTN_HEADER_BASE +
@@ -656,22 +674,14 @@ class MainWindow_Init(DialogMenu, object):
             self.folders_to_unload.append(button)
 
     def unload_folders(self):
+        """Reloads folders from memory."""
         for folder in self.folders_to_unload:
             folder.deleteLater()
         self.folders_to_unload.clear()
 
     # - Task methods
-    def task_action(self):
-        self.cur.execute('''UPDATE tasks SET task_status = ? WHERE task_id = ?''',
-                         (not self.sender().status, self.sender().id))
-        self.db.commit()
-
-        if self.sender().page == 'main':
-            self.main_page_load(True)
-        elif self.sender().page == 'folder':
-            self.folder_page_load(True)
-
     def task_db_requests(self, request, title=None, date=None, folder=None, task_id=None):
+        """Databases requests for tasks id dialog menu."""
         if request == 'add':
             self.cur.execute(f'''INSERT INTO tasks (task_description, task_date, folder_id) VALUES (?, ?, ?)''',
                              (title, date, folder))
@@ -692,7 +702,19 @@ class MainWindow_Init(DialogMenu, object):
 
         self.main_page_load(True)
 
+    def task_action(self):
+        """Makes task status is done."""
+        self.cur.execute('''UPDATE tasks SET task_status = ? WHERE task_id = ?''',
+                         (not self.sender().status, self.sender().id))
+        self.db.commit()
+
+        if self.sender().page == 'main':
+            self.main_page_load(True)
+        elif self.sender().page == 'folder':
+            self.folder_page_load(True)
+
     def delete_task(self):
+        """Deletes the task from database if the task is already done."""
         self.cur.execute('''DELETE FROM tasks WHERE task_id = ?''', (self.sender().id,))
         self.db.commit()
 
@@ -702,6 +724,7 @@ class MainWindow_Init(DialogMenu, object):
             self.folder_page_load(True)
 
     def load_tasks(self, tasks, isMainPage, container, layout, withDate=False):
+        """Loads tasks to special groupbox."""
         folder_space = QtWidgets.QLabel()
         folder_space.setMinimumSize(QtCore.QSize(0, 0))
         if tasks:
@@ -788,13 +811,13 @@ class MainWindow_Init(DialogMenu, object):
             self.tasks_to_unload.append(no_tasks)
 
     def unload_tasks(self):
+        """Unloads tasks from memory."""
         for task in self.tasks_to_unload:
             task.deleteLater()
         self.tasks_to_unload.clear()
 
-    # Ui
-    # - Pages load
     def main_page_load(self, reload=False):
+        """Loads main page tasks and title."""
         if not reload:
             self.folder_click(self.btn_menu_main, self.active_button)
             self.active_button.setEnabled(True)
@@ -869,6 +892,7 @@ class MainWindow_Init(DialogMenu, object):
         self.main.setCurrentIndex(0)
 
     def folder_page_load(self, reload=False):
+        """Loads folder page tasks and title."""
         if not reload:
             self.folder_click(self.sender(), self.active_button)
             self.active_button.setEnabled(True)
@@ -894,6 +918,7 @@ class MainWindow_Init(DialogMenu, object):
 
     # - Setups
     def _folders_btn_setup(self):
+        """Sets up header (folder) buttons."""
         self.unload_folders()
 
         self.btn_menu_main = QtWidgets.QPushButton(self.buttons)
@@ -911,8 +936,7 @@ class MainWindow_Init(DialogMenu, object):
         self.load_folders(folders)
 
     def _main_page_setup(self):
-        """Настройка главной вкладки"""
-
+        """Sets up main page."""
         self.main_page = QtWidgets.QWidget()
 
         self.main_title = QtWidgets.QLabel(self.main_page)
@@ -1078,6 +1102,7 @@ class MainWindow_Init(DialogMenu, object):
         self.main.addWidget(self.main_page)
 
     def _folder_page_setup(self):
+        """Sets up folder page."""
         self.folder_page = QtWidgets.QWidget()
 
         self.folder_title = self.ClickedLabel(self.folder_page)
@@ -1112,8 +1137,8 @@ class MainWindow_Init(DialogMenu, object):
 
         self.main.addWidget(self.folder_page)
 
-    # - Main setup
     def setupUi(self, MainWindow):
+        """Sets up UI."""
         # Настройка отображения главного экрана
         MainWindow.resize(QtCore.QSize(1246, 698))
         MainWindow.setMinimumSize(QtCore.QSize(1246, 698))
