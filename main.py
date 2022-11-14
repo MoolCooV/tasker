@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import datetime as dt
+import locale
 import sqlite3
 import sys
-import locale
-import datetime as dt
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
@@ -124,13 +124,13 @@ color: #FF4E4E;
                            "line-height: 19px;"
                            "padding: 4px 10px;"
                            "color: #FFFFFF;"),
-    'dialog_date': ("""QDateEdit { background: #282828; border-radius: 11px; padding-left: 5px; font-family: 'Inter'; 
-font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; } 
-QDateEdit:disabled { background: #282828; border-radius: 11px; font-family: 'Inter'; font-style: normal; 
-font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #A3A3A3; } QDateEdit::up-button 
-{ width: 16px; height: 13px; border-radius: 0px 11px 0px 0px; } QDateEdit::up-button:pressed { background: 
-#191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width: 
-16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; } 
+    'dialog_date': ("""QDateEdit { background: #282828; border-radius: 11px; padding-left: 5px; font-family: 'Inter';
+font-style: normal; font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #FFFFFF; }
+QDateEdit:disabled { background: #282828; border-radius: 11px; font-family: 'Inter'; font-style: normal;
+font-weight: 300; font-size: 15px; line-height: 19px; text-align: center; color: #A3A3A3; } QDateEdit::up-button
+{ width: 16px; height: 13px; border-radius: 0px 11px 0px 0px; } QDateEdit::up-button:pressed { background:
+#191919; } QDateEdit::up-arrow { image: url(./src/img/dateEdit/arrow1.png); } QDateEdit::down-button { width:
+16px; height: 13px; border-radius: 0px 0px 0px 11px; } QDateEdit::down-button:pressed { background: #191919; }
 QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
     'dialog_btnConfirm': ("font-family: 'Inter';"
                           "font-style: normal;"
@@ -160,13 +160,13 @@ QDateEdit::down-arrow { image: url(./src/img/dateEdit/arrow2.png) }"""),
                           "font-size: 16px;"
                           "line-height: 19px;"
                           "color: #FFFFFF;"),
-    'scroll_bar': ('''QScrollArea { border: 0; } QGroupBox { border: 0; } QScrollBar:vertical { width: 15px; margin: 
-20px 0 20px 0; } QScrollBar::handle:vertical { min-height: 10px; background: #282828; } 
-QScrollBar::add-line:vertical { background: #282828; width: 20px; height: 20px; subcontrol-position: bottom; 
-subcontrol-origin: margin; } QScrollBar::sub-line:vertical { background: #282828; width: 20px; height: 20px; 
-subcontrol-position: top; subcontrol-origin: margin; } QScrollBar::up-arrow:vertical, 
+    'scroll_bar': ('''QScrollArea { border: 0; } QGroupBox { border: 0; } QScrollBar:vertical { width: 15px; margin:
+20px 0 20px 0; } QScrollBar::handle:vertical { min-height: 10px; background: #282828; }
+QScrollBar::add-line:vertical { background: #282828; width: 20px; height: 20px; subcontrol-position: bottom;
+subcontrol-origin: margin; } QScrollBar::sub-line:vertical { background: #282828; width: 20px; height: 20px;
+subcontrol-position: top; subcontrol-origin: margin; } QScrollBar::up-arrow:vertical,
 QScrollBar::down-arrow:vertical { width: 16px; height: 13px; } QScrollBar::up-arrow:vertical { image: url(
-./src/img/dateEdit/arrow1.png); } QScrollBar::down-arrow:vertical { image: url(./src/img/dateEdit/arrow2.png); } 
+./src/img/dateEdit/arrow1.png); } QScrollBar::down-arrow:vertical { image: url(./src/img/dateEdit/arrow2.png); }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }''')
 }
 # Months in the accusative
@@ -687,8 +687,7 @@ class MainWindow_Init(DialogMenu, object):
                              (title, date, folder))
         elif request == 'edit':
             self.cur.execute(f'''UPDATE tasks SET (task_description, task_date, folder_id) = (?, ?, ?) 
-            WHERE task_id = ? ''',
-                             (title, date, folder, task_id))
+WHERE task_id = ? ''', (title, date, folder, task_id))
         elif request == 'delete':
             self.cur.execute('''DELETE FROM tasks WHERE task_id = ?''', (self.sender().id,))
 
@@ -1218,7 +1217,7 @@ class MainWindow(QtWidgets.QMainWindow, MainWindow_Init):
     resized = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent=parent)
+        super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.resized.connect(self.resizeUI)
 
