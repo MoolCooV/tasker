@@ -167,6 +167,14 @@ subcontrol-origin: margin; } QScrollBar::sub-line:vertical { background: #282828
 subcontrol-position: top; subcontrol-origin: margin; } QScrollBar::up-arrow:vertical,
 QScrollBar::down-arrow:vertical { width: 16px; height: 13px; } QScrollBar::up-arrow:vertical { image: url(
 ./src/img/dateEdit/arrow1.png); } QScrollBar::down-arrow:vertical { image: url(./src/img/dateEdit/arrow2.png); }
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }'''),
+    'scroll_bar__folder': ('''background: #151515; QScrollArea { border: 0; } QGroupBox { border: 0; }
+QScrollBar:vertical { width: 15px; margin: 20px 0 20px 0; } QScrollBar::handle:vertical { min-height: 10px;
+background: #282828; } QScrollBar::add-line:vertical { background: #282828; width: 20px; height: 20px;
+subcontrol-position: bottom; subcontrol-origin: margin; } QScrollBar::sub-line:vertical { background: #282828;
+width: 20px; height: 20px; subcontrol-position: top; subcontrol-origin: margin; } QScrollBar::up-arrow:vertical,
+QScrollBar::down-arrow:vertical { width: 16px; height: 13px; } QScrollBar::up-arrow:vertical { image: url(
+./src/img/dateEdit/arrow1.png); } QScrollBar::down-arrow:vertical { image: url(./src/img/dateEdit/arrow2.png); }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }''')
 }
 # Months in the accusative
@@ -1063,8 +1071,9 @@ class MainWindow_Init(DialogMenu, object):
         # Настройка main_secondArea
         self.main_secondArea = QtWidgets.QScrollArea(self.main_page)
         self.main_secondArea.setWidgetResizable(True)
-        self.main_secondArea.setStyleSheet(STYLES['scroll_bar'] + "\nQScrollArea{ background: #151515;}")
+        self.main_secondArea.setStyleSheet(STYLES['scroll_bar'])
         self.main_secondArea_contents = QtWidgets.QWidget()
+        self.main_secondArea_contents.setStyleSheet("background: #151515;")
 
         self.main_secondArea_layout = QtWidgets.QGridLayout(self.main_secondArea_contents)
         self.main_secondArea_layout.setContentsMargins(25, 25, 25, 25)
