@@ -550,7 +550,7 @@ class DialogMenu:
         self.dialog_folder_input.setGeometry(QtCore.QRect(120, 0, 295, 29))
         self.dialog_folder_input.setStyleSheet(STYLES['dialog_input'])
 
-        # Add tas
+        # Add task
         self.dialog_task_container = QtWidgets.QGroupBox(self.dialog)
         self.dialog_task_container.setGeometry(QtCore.QRect(0, 70, 440, 125))
         self.dialog_task_container.setStyleSheet("border: 0;")
